@@ -10,6 +10,7 @@
     #include <GL/glut.h>
 #endif
 
+#include "png_texture.h"
 #include "solarsystem.h"
 #include "camera.h"
 #include "constants.h"
@@ -25,12 +26,15 @@ GLfloat lightSpecular[] = { 1.0, 1.0, 1.0, 1.0 }; //Specular blanca
 GLfloat lightPosition[] = { 0.0, 0.0, 0.0, 1.0 }; //SOL
 
 GLfloat sunAmbience[] = {1.0,1.0,0.0, 1.0 };
+GLuint hud;
 
 int screenWidth=1200,screenHeight=700;
 bool showOrbits = false;
 int planetSelected = 1; //A que planeta estaremos viendo (0 es el Sol)
 SolarSystem solarSystem; //Vector de Planetas (Cada Planeta tiene x lunas)
 Camera camera;
+
+const std::string hud_path = "assets/hud.png";
 
 //Valores para controlar desplazamientos
 double _time = 2.552f;
@@ -66,6 +70,9 @@ void init(void)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
     glEnable (GL_LIGHT0);
+    
+    int s = 1;
+    hud = loadTexture(hud_path, s, s);
     
     //Distancia desde el centro del Sol (km)
     //Tiempo de traslacion              (Dias terrestres)
@@ -161,6 +168,23 @@ void display(void)
         glDisable(GL_LIGHTING);
         if (showOrbits) solarSystem.renderOrbits();
     glDisable(GL_DEPTH_TEST);
+    
+    /*
+    // set up ortho matrix for showing the UI (help dialogue)
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, (GLdouble) screenWidth, (GLdouble) screenHeight, 0.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    
+    glBindTexture(GL_TEXTURE_2D, deck->getTextureHandle());
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f);	glVertex2f(0.0f, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);	glVertex2f(512.0f, 0.0f);
+    glTexCoord2f(1.0f, 1.0f);	glVertex2f(512.0f, 512.0f);
+    glTexCoord2f(0.0f, 1.0f);	glVertex2f(0.0f, 512.0f);
+    glEnd();
+     */
     
     glutSwapBuffers();        //End
 }
