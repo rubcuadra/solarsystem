@@ -297,10 +297,13 @@ void display(void)
     moveCamera();
     
     glEnable(GL_DEPTH_TEST);  //Que pasen detras de otros, permitir profundidades
-        glEnable(GL_LIGHTING);    //Nos sirve para iluminar orbitas
-            solarSystem.render(); // Pintar Sistema Solar
-        glDisable(GL_LIGHTING);
-        if (showOrbits) solarSystem.renderOrbits();
+        glPushMatrix();
+            //glTranslatef(5, 1, 4); //Para que sirva debemos decirle al solar system que todos los planetas tienen un offset
+            glEnable(GL_LIGHTING);    //Nos sirve para iluminar orbitas
+                solarSystem.render(); // Pintar Sistema Solar
+            glDisable(GL_LIGHTING);
+            if (showOrbits) solarSystem.renderOrbits();
+        glPopMatrix();
     glDisable(GL_DEPTH_TEST);
     
     
