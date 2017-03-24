@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <png.h>
 
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
@@ -10,7 +11,6 @@
     #include <GL/glut.h>
 #endif
 
-#include "png_texture.h"
 #include "solarsystem.h"
 #include "camera.h"
 #include "constants.h"
@@ -26,7 +26,7 @@ GLfloat lightSpecular[] = { 1.0, 1.0, 1.0, 1.0 }; //Specular blanca
 GLfloat lightPosition[] = { 0.0, 0.0, 0.0, 1.0 }; //SOL
 
 GLfloat sunAmbience[] = {1.0,1.0,0.0, 1.0 };
-GLuint hud;
+GLubyte *textureImage;
 
 int screenWidth=1200,screenHeight=700;
 bool showOrbits = false;
@@ -34,7 +34,9 @@ int planetSelected = 1; //A que planeta estaremos viendo (0 es el Sol)
 SolarSystem solarSystem; //Vector de Planetas (Cada Planeta tiene x lunas)
 Camera camera;
 
-const std::string hud_path = "assets/hud.png";
+int hud_width, hud_height;
+bool hasAlpha = true;
+char filename[] = "assets/red_hud.png";
 
 //Valores para controlar desplazamientos
 double _time = 2.552f;
@@ -54,6 +56,123 @@ void timer(int)
     glutTimerFunc(10, timer, 0); //100fps
 }
 
+bool loadPngImage(char *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData)
+{
+    png_structp png_ptr;
+    png_infop info_ptr;
+    unsigned int sig_read = 0;
+    int color_type, interlace_type;
+    FILE *fp;
+    
+    if ((fp = fopen(name, "rb")) == NULL)
+        return false;
+    
+    /* Create and initialize the png_struct
+     * with the desired error handler
+     * functions.  If you want to use the
+     * default stderr and longjump method,
+     * you can supply NULL for the last
+     * three parameters.  We also supply the
+     * the compiler header file version, so
+     * that we know if the application
+     * was compiled with a compatible version
+     * of the library.  REQUIRED
+     */
+    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
+                                     NULL, NULL, NULL);
+    
+    if (png_ptr == NULL) {
+        fclose(fp);
+        return false;
+    }
+    
+    /* Allocate/initialize the memory
+     * for image information.  REQUIRED. */
+    info_ptr = png_create_info_struct(png_ptr);
+    if (info_ptr == NULL) {
+        fclose(fp);
+        png_destroy_read_struct(&png_ptr, NULL, NULL);
+        return false;
+    }
+    
+    /* Set error handling if you are
+     * using the setjmp/longjmp method
+     * (this is the normal method of
+     * doing things with libpng).
+     * REQUIRED unless you  set up
+     * your own error handlers in
+     * the png_create_read_struct()
+     * earlier.
+     */
+    if (setjmp(png_jmpbuf(png_ptr))) {
+        /* Free all of the memory associated
+         * with the png_ptr and info_ptr */
+        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+        fclose(fp);
+        /* If we get here, we had a
+         * problem reading the file */
+        return false;
+    }
+    
+    /* Set up the output control if
+     * you are using standard C streams */
+    png_init_io(png_ptr, fp);
+    
+    /* If we have already
+     * read some of the signature */
+    png_set_sig_bytes(png_ptr, sig_read);
+    
+    /*
+     * If you have enough memory to read
+     * in the entire image at once, and
+     * you need to specify only
+     * transforms that can be controlled
+     * with one of the PNG_TRANSFORM_*
+     * bits (this presently excludes
+     * dithering, filling, setting
+     * background, and doing gamma
+     * adjustment), then you can read the
+     * entire image (including pixels)
+     * into the info structure with this
+     * call
+     *
+     * PNG_TRANSFORM_STRIP_16 |
+     * PNG_TRANSFORM_PACKING  forces 8 bit
+     * PNG_TRANSFORM_EXPAND forces to
+     *  expand a palette into RGB
+     */
+    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, NULL);
+    
+    png_uint_32 width, height;
+    int bit_depth;
+    png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
+                 &interlace_type, NULL, NULL);
+    outWidth = width;
+    outHeight = height;
+    
+    unsigned int row_bytes = png_get_rowbytes(png_ptr, info_ptr);
+    *outData = (unsigned char*) malloc(row_bytes * outHeight);
+    
+    png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
+    
+    for (int i = 0; i < outHeight; i++) {
+        // note that png is ordered top to
+        // bottom, but OpenGL expect it bottom to top
+        // so the order or swapped
+        memcpy(*outData+(row_bytes * (outHeight-1-i)), row_pointers[i], row_bytes);
+    }
+    
+    /* Clean up after the read,
+     * and free any memory allocated */
+    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+    
+    /* Close the file */
+    fclose(fp);
+    
+    /* That's it */
+    return true;
+}
+
 void init(void)
 {
     glClearColor (0.0, 0.0, 0.0, 0.0); //Negro
@@ -71,8 +190,23 @@ void init(void)
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
     glEnable (GL_LIGHT0);
     
-    int s = 1;
-    hud = loadTexture(hud_path, s, s);
+    //PNG TRANSPARENCY
+    glEnable(GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    bool success = loadPngImage(filename, hud_width, hud_height, hasAlpha, &textureImage);
+    if (!success) {
+        std::cout << "Unable to load png file" << std::endl;
+        return;
+    }
+    std::cout << "Image loaded " << hud_width << " " << hud_height << " alpha " << hasAlpha << std::endl;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    
+    //hud = new PNG("assets/ring.png");
     
     //Distancia desde el centro del Sol (km)
     //Tiempo de traslacion              (Dias terrestres)
@@ -124,7 +258,7 @@ void init(void)
     controls.pitchUp = false;
     controls.yawLeft = false;
     controls.yawRight = false;
-    
+        
     timer(0);
 }
 
@@ -169,22 +303,27 @@ void display(void)
         if (showOrbits) solarSystem.renderOrbits();
     glDisable(GL_DEPTH_TEST);
     
-    /*
-    // set up ortho matrix for showing the UI (help dialogue)
+    
+    // HUD
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0.0, (GLdouble) screenWidth, (GLdouble) screenHeight, 0.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    glBindTexture(GL_TEXTURE_2D, deck->getTextureHandle());
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f);	glVertex2f(0.0f, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);	glVertex2f(512.0f, 0.0f);
-    glTexCoord2f(1.0f, 1.0f);	glVertex2f(512.0f, 512.0f);
-    glTexCoord2f(0.0f, 1.0f);	glVertex2f(0.0f, 512.0f);
-    glEnd();
-     */
+    glEnable(GL_TEXTURE_2D);
+        glTexImage2D(GL_TEXTURE_2D, 0, hasAlpha ? 4 : 3, hud_width,
+                     hud_height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE,
+                     textureImage);
+        glColor3f(1, 1, 1);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 0.0f);	glVertex2f(0.0f, 0.0f);
+            glTexCoord2f(1.0f, 0.0f);	glVertex2f(screenWidth, 0.0f);
+            glTexCoord2f(1.0f, 1.0f);	glVertex2f(screenWidth, screenHeight);
+            glTexCoord2f(0.0f, 1.0f);	glVertex2f(0.0f, screenHeight);
+        glEnd();
+    
+    glDisable(GL_TEXTURE_2D);
     
     glutSwapBuffers();        //End
 }
@@ -313,7 +452,7 @@ void printCommands()
 {
     std::cout<<"Bienvenid@ a la nave 9102, es recomendable usar un teclado en formato US\nSus controles son:\n\t wasd -> Movimiento \n\t qe   -> Voltear vista costados\n\t ijkl -> Rolar/Maniobrar\n\t ,    -> Aumentar velocidad\n\t .    -> Disminuir Velocidad\n\n";
     std::cout<<"Otros comandos:\n\t o -> Muestras/Escondes orbita\n\t - -> El tiempo pasara mas lento\n\t = -> El tiempo pasara mas rapido\n\t r -> Tamaño de planetas real(No recomendable, no se ven)\n\t [ -> Disminuir tamaño de planetas \n\t ] -> Aumentar tamaño de planetas\n";
-    std::cout<<"Podras apuntar la camara a algun planeta usando los numeros\nEj. Ver al sol '0',Tierra '3'...";
+    std::cout<<"Podras apuntar la camara a algun planeta usando los numeros\nEj. Ver al sol '0',Tierra '3'...\n";
     
 }
 int main(int argc, char** argv)
@@ -321,7 +460,7 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
     glutInitWindowSize(screenWidth,screenHeight);
-    glutInitWindowPosition(100, 100);
+    glutInitWindowPosition(0, 0);
     glutCreateWindow(argv[0]);
     glutSetWindowTitle("A01019102");
     printCommands();
@@ -334,3 +473,4 @@ int main(int argc, char** argv)
     glutMainLoop();
     return 0;
 }
+
