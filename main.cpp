@@ -354,7 +354,7 @@ void keyDown(unsigned char key, int x, int y)
         {
             float vec[3];             //Aqui guardaremos sus actuales coordenadas
             milky_way.getSystemPosition(key-'0', vec);//Obtener su posicion
-            printf("%f %f %f\n",vec[0],vec[1],vec[2]);
+            //printf("%f %f %f\n",vec[0],vec[1],vec[2]);
             camera.pointAt(vec);
         }
     }
