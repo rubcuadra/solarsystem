@@ -25,14 +25,13 @@ GLfloat lightAmbient[] = { 1.0, 1.0, 1.0, 0.5 }; //Ambiente
 GLfloat lightDiffuse[] = { 1.0, 1.0, 1.0, 1.0 }; //Difusa
 GLfloat lightSpecular[] = { 1.0, 1.0, 1.0, 1.0 }; //Specular blanca
 
-GLfloat solarSystemPos[] = { 3.0, 1.0, 2.0, 1.0 }; //SOL
-
+GLfloat solarSystemPos[] = { 1.0, 2.0, 3.0, 1.0 }; //SOL
 GLfloat sunAmbience[] = {1.0,1.0,0.0, 1.0 };
+
 GLubyte *textureImage;
 
 int screenWidth=1200,screenHeight=700;
 bool showOrbits = false;
-int planetSelected = 1; //A que planeta estaremos viendo (0 es el Sol)
 
 GLenum *lights;
 
@@ -351,13 +350,13 @@ void keyDown(unsigned char key, int x, int y)
     // check for numerical keys
     if ('0' <= key&&key <= '9')
     {
-        /*if (key-'0' < solarSystem->getTotalPlanets())
+        if (key-'0' < milky_way.getTotalSystems() )
         {
             float vec[3];             //Aqui guardaremos sus actuales coordenadas
-            planetSelected = key-'0'; //Restar 0 es como convertirlo a numero
-            solarSystem->getPlanetPosition(planetSelected, vec); //Obtener su posicion
+            milky_way.getSystemPosition(key-'0', vec);//Obtener su posicion
+            printf("%f %f %f\n",vec[0],vec[1],vec[2]);
             camera.pointAt(vec);
-        }*/
+        }
     }
     switch (key)
     {

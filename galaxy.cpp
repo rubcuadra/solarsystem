@@ -47,7 +47,9 @@ void Galaxy::renderOrbits()
 // Manda a llamar getPosition del Sistema en ese indice
 void Galaxy::getSystemPosition(int index, float* vec)
 {
-    vec = sistemas[index].getPosition();
+    vec[0] = sistemas[index].getPosition()[0];
+    vec[1] = sistemas[index].getPosition()[1];
+    vec[2] = sistemas[index].getPosition()[2];
 }
 unsigned long Galaxy::getTotalSystems(){return sistemas.size();}
 

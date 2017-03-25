@@ -41,10 +41,13 @@ GLfloat * SolarSystem::getPosition()
 }
 void SolarSystem::renderOrbits()
 {
-	for (int i = 0; i < planets.size(); i++)
-	{
-		planets[i].renderOrbit();
-	}
+    glPushMatrix();
+        glTranslatef( pos[0], pos[1], pos[2] );
+        for (int i = 0; i < planets.size(); i++)
+        {
+            planets[i].renderOrbit();
+        }
+    glPopMatrix();
 }
 
 unsigned long SolarSystem::getTotalPlanets()
