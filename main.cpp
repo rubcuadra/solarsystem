@@ -14,6 +14,7 @@
 #include "solarsystem.h"
 #include "camera.h"
 #include "constants.h"
+#include "galaxy.h"
 
 //Material
 GLfloat matSpecular[] = { 0.3, 0.3, 0.3, 1.0 }; //Color Charolazo(Blanco)
@@ -23,7 +24,8 @@ GLfloat matShininess[] = { 70.0 };              //Charolazo
 GLfloat lightAmbient[] = { 1.0, 1.0, 1.0, 0.5 }; //Ambiente
 GLfloat lightDiffuse[] = { 1.0, 1.0, 1.0, 1.0 }; //Difusa
 GLfloat lightSpecular[] = { 1.0, 1.0, 1.0, 1.0 }; //Specular blanca
-GLfloat lightPosition[] = { 0.0, 0.0, 0.0, 1.0 }; //SOL
+
+GLfloat solarSystemPos[] = { 3.0, 1.0, 2.0, 1.0 }; //SOL
 
 GLfloat sunAmbience[] = {1.0,1.0,0.0, 1.0 };
 GLubyte *textureImage;
@@ -31,8 +33,12 @@ GLubyte *textureImage;
 int screenWidth=1200,screenHeight=700;
 bool showOrbits = false;
 int planetSelected = 1; //A que planeta estaremos viendo (0 es el Sol)
-SolarSystem solarSystem; //Vector de Planetas (Cada Planeta tiene x lunas)
+
+GLenum *lights;
+
+Galaxy milky_way;
 Camera camera;
+SolarSystem * temp = nullptr;
 
 int hud_width, hud_height;
 bool hasAlpha = true;
@@ -185,10 +191,7 @@ void init(void)
     glMaterialfv(GL_FRONT, GL_SHININESS, matShininess);
     glMaterialfv(GL_FRONT, GL_AMBIENT, matAmbience);
     //Luz
-    glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-    glEnable (GL_LIGHT0);
+    lights = new GLenum[8]{GL_LIGHT0,GL_LIGHT1,GL_LIGHT2,GL_LIGHT3,GL_LIGHT4,GL_LIGHT5,GL_LIGHT6,GL_LIGHT7};
     
     //PNG TRANSPARENCY
     glEnable(GL_BLEND);
@@ -206,22 +209,23 @@ void init(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
-    //hud = new PNG("assets/ring.png");
+    milky_way.addSystem( new SolarSystem( solarSystemPos ) );
     
+    temp = milky_way.getSystem(0);
     //Distancia desde el centro del Sol (km)
     //Tiempo de traslacion              (Dias terrestres)
     //Tiempo de rotacion                (Dias terrestres)
     //Radio                             (km)
-    solarSystem.addPlanet(0, 1, 500, 695500,1.0,1.0,0.0);                            //Sun
-    solarSystem.addPlanet(57910000, 88, 58.6, 2440,0.5529,0.1803,0.5921);            //Mercury
-    solarSystem.addPlanet(108200000, 224.65, 243, 6052,0.6,0.5215,0.3882);           //Venus
-    solarSystem.addPlanet(149600000, 365, 1, 6371,0.1294,0.1843,0.2863);             //Earth
-    solarSystem.addPlanet(227939100, 686, 1.03f, 3389,0.9725,0.5843,0.3882);         //Mars
-    solarSystem.addPlanet(778500000, 4332, 0.4139, 69911,0.5882,0.2941,0);           //Jupiter
-    solarSystem.addPlanet(1433000000, 10759, 0.44375, 58232,0.8118,0.6902,0.5686);   //Saturn
-    solarSystem.addPlanet(2877000000, 30685, 0.718056, 25362,0.8039,0.9529,0.9569);  //Uranus
-    solarSystem.addPlanet(4503000000, 60188, 0.6713, 24622,0.2784,0.4392,0.9661);    //Neptune
-    solarSystem.addPlanet(5906380000, 90616, 6.39, 1137,0.8510,0.6784,0.5255);       //Pluto
+    temp->addPlanet(0, 1, 500, 695500,1.0,1.0,0.0);                            //Sun
+    temp->addPlanet(57910000, 88, 58.6, 2440,0.5529,0.1803,0.5921);            //Mercury
+    temp->addPlanet(108200000, 224.65, 243, 6052,0.6,0.5215,0.3882);           //Venus
+    temp->addPlanet(149600000, 365, 1, 6371,0.1294,0.1843,0.2863);             //Earth
+    temp->addPlanet(227939100, 686, 1.03f, 3389,0.9725,0.5843,0.3882);         //Mars
+    temp->addPlanet(778500000, 4332, 0.4139, 69911,0.5882,0.2941,0);           //Jupiter
+    temp->addPlanet(1433000000, 10759, 0.44375, 58232,0.8118,0.6902,0.5686);   //Saturn
+    temp->addPlanet(2877000000, 30685, 0.718056, 25362,0.8039,0.9529,0.9569);  //Uranus
+    temp->addPlanet(4503000000, 60188, 0.6713, 24622,0.2784,0.4392,0.9661);    //Neptune
+    temp->addPlanet(5906380000, 90616, 6.39, 1137,0.8510,0.6784,0.5255);       //Pluto
     
     //Numero de planeta
     //Distancia desde el centro de su planeta (km)
@@ -229,13 +233,13 @@ void init(void)
     //Dias de rotacion
     //radio
     
-    solarSystem.addMoon(3, 7000000, 27.3, 27.3, 1738);         //Luna de la Tierra
-    solarSystem.addMoon(6,39090000, 79,79,5150);               //Titan - Saturn
-    solarSystem.addMoon(5,47090000, 3.51 , 3.51, 1568);        //Europa - Jupiter
-    solarSystem.addMoon(5,87090000, 7.15 ,7.15, 5264);         //Ganymede - Jupiter
-    solarSystem.addMoon(5,127090000, 17,17,4120);              //Callisto - Jupiter
-    solarSystem.addMoon(8,16090000, -5.8,-5.8,1353);           //Triton- Neptune
-    solarSystem.addMoon(7,41090000, 8.7,8.7,1578);             //Titania - Uranus
+    temp->addMoon(3, 7000000, 27.3, 27.3, 1738);         //Luna de la Tierra
+    temp->addMoon(6,39090000, 79,79,5150);               //Titan - Saturn
+    temp->addMoon(5,47090000, 3.51 , 3.51, 1568);        //Europa - Jupiter
+    temp->addMoon(5,87090000, 7.15 ,7.15, 5264);         //Ganymede - Jupiter
+    temp->addMoon(5,127090000, 17,17,4120);              //Callisto - Jupiter
+    temp->addMoon(8,16090000, -5.8,-5.8,1353);           //Triton- Neptune
+    temp->addMoon(7,41090000, 8.7,8.7,1578);             //Titania - Uranus
     
     //Numero de planeta
     //Distancia interna
@@ -243,9 +247,9 @@ void init(void)
     //Distancia externa
     //Angulo sobre X
     
-    solarSystem.addRing(6,20500,100,92000,15); //Saturno - Medio inclinado
-    solarSystem.addRing(7,3000,100,46000,90);  //Uranus - Vertical
-    solarSystem.addRing(8,4000,100,46000,6);   //Neptuno
+    temp->addRing(6,20500,100,92000,15); //Saturno - Medio inclinado
+    temp->addRing(7,3000,100,46000,90);  //Uranus - Vertical
+    temp->addRing(8,4000,100,46000,6);   //Neptuno
     
     // reset controls
     controls.forward = false;
@@ -258,6 +262,14 @@ void init(void)
     controls.pitchUp = false;
     controls.yawLeft = false;
     controls.yawRight = false;
+    
+    for (int i = 0; i < milky_way.getTotalSystems(); ++i)
+    {
+        glLightfv( lights[i], GL_AMBIENT, lightAmbient);
+        glLightfv( lights[i], GL_DIFFUSE, lightDiffuse);
+        glLightfv( lights[i], GL_SPECULAR, lightSpecular);
+        glEnable ( lights[i]);
+    }
         
     timer(0);
 }
@@ -290,19 +302,23 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Buffers
     
     _time += timeSpeed;                         //Simular que el tiempo pasa
-    solarSystem.calculatePositions(_time);      //Generar coordenadas basadas en tiempo
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition); //Posicionar luz
+    
+    milky_way.calculatePositions(_time);        //Generar coordenadas basadas en tiempo
     
     setUpPerspective();
     moveCamera();
     
     glEnable(GL_DEPTH_TEST);  //Que pasen detras de otros, permitir profundidades
         glPushMatrix();
-            //glTranslatef(5, 1, 4); //Para que sirva debemos decirle al solar system que todos los planetas tienen un offset
+    
+            for (int i = 0; i < milky_way.getTotalSystems(); ++i)
+                glLightfv( lights[i] , GL_POSITION, milky_way.getSystem(i)->getPosition() ); //Posicionar luz
+     
+    
             glEnable(GL_LIGHTING);    //Nos sirve para iluminar orbitas
-                solarSystem.render(); // Pintar Sistema Solar
+                milky_way.render(); // Pintar Sistema Solar
             glDisable(GL_LIGHTING);
-            if (showOrbits) solarSystem.renderOrbits();
+            if (showOrbits) milky_way.renderOrbits();
         glPopMatrix();
     glDisable(GL_DEPTH_TEST);
     
@@ -335,13 +351,13 @@ void keyDown(unsigned char key, int x, int y)
     // check for numerical keys
     if ('0' <= key&&key <= '9')
     {
-        if (key-'0' < solarSystem.getTotalPlanets())
+        /*if (key-'0' < solarSystem->getTotalPlanets())
         {
             float vec[3];             //Aqui guardaremos sus actuales coordenadas
             planetSelected = key-'0'; //Restar 0 es como convertirlo a numero
-            solarSystem.getPlanetPosition(planetSelected, vec); //Obtener su posicion
+            solarSystem->getPlanetPosition(planetSelected, vec); //Obtener su posicion
             camera.pointAt(vec);
-        }
+        }*/
     }
     switch (key)
     {
@@ -451,13 +467,7 @@ void reshape(int w, int h)
 }
 
 void idle(){/*glutPostRedisplay(); //Mejor usamos timer para que sea tiempo mas real*/}
-void printCommands()
-{
-    std::cout<<"Bienvenid@ a la nave 9102, es recomendable usar un teclado en formato US\nSus controles son:\n\t wasd -> Movimiento \n\t qe   -> Voltear vista costados\n\t ijkl -> Rolar/Maniobrar\n\t ,    -> Aumentar velocidad\n\t .    -> Disminuir Velocidad\n\n";
-    std::cout<<"Otros comandos:\n\t o -> Muestras/Escondes orbita\n\t - -> El tiempo pasara mas lento\n\t = -> El tiempo pasara mas rapido\n\t r -> Tamaño de planetas real(No recomendable, no se ven)\n\t [ -> Disminuir tamaño de planetas \n\t ] -> Aumentar tamaño de planetas\n";
-    std::cout<<"Podras apuntar la camara a algun planeta usando los numeros\nEj. Ver al sol '0',Tierra '3'...\n";
-    
-}
+
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
@@ -466,7 +476,7 @@ int main(int argc, char** argv)
     glutInitWindowPosition(0, 0);
     glutCreateWindow(argv[0]);
     glutSetWindowTitle("A01019102");
-    printCommands();
+    //printCommands();
     init();
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);

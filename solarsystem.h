@@ -16,9 +16,9 @@ class SolarSystem
 {
 private:
 	std::vector<Planet> planets;
-
+    GLfloat *pos; //Un array de 3 posiciones
 public:
-	SolarSystem();
+	SolarSystem(GLfloat *coords); //Coordenadas
 	// Manda a llamar a los planetas que calculen sus posiciones
 	void calculatePositions(float time);
 	// Agrega planetas al arreglo
@@ -35,7 +35,7 @@ public:
 	float getRadiusOfPlanet(int index);
     // Total de planetas
     unsigned long getTotalPlanets();
-    
+    GLfloat * getPosition();
 };
 
 

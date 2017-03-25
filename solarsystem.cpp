@@ -1,9 +1,6 @@
 #include "solarsystem.h"
 
-SolarSystem::SolarSystem()
-{
-	
-}
+SolarSystem::SolarSystem(GLfloat *coords):pos(coords){}
 
 void SolarSystem::calculatePositions(float time)
 {
@@ -30,12 +27,18 @@ void SolarSystem::addRing(int planetIndex, float inner_distanceFromPlanet, float
 
 void SolarSystem::render()
 {
-	for (int i = 0; i < planets.size(); i++)
-	{
-		planets[i].render();
-	}
+    glPushMatrix();
+        glTranslatef( pos[0], pos[1], pos[2] );
+        for (int i = 0; i < planets.size(); i++)
+        {
+            planets[i].render();
+        }
+    glPopMatrix();
 }
-
+GLfloat * SolarSystem::getPosition()
+{
+    return pos;
+}
 void SolarSystem::renderOrbits()
 {
 	for (int i = 0; i < planets.size(); i++)
@@ -52,6 +55,10 @@ unsigned long SolarSystem::getTotalPlanets()
 void SolarSystem::getPlanetPosition(int index, float* vec)
 {
 	planets[index].getPosition(vec);
+    vec[0] += pos[0];
+    vec[1] += pos[1];
+    vec[2] += pos[2];
+    
 }
 
 float SolarSystem::getRadiusOfPlanet(int index)
