@@ -190,7 +190,15 @@ void init(void)
     glMaterialfv(GL_FRONT, GL_SHININESS, matShininess);
     glMaterialfv(GL_FRONT, GL_AMBIENT, matAmbience);
     //Luz
-    lights = new GLenum[8]{GL_LIGHT0,GL_LIGHT1,GL_LIGHT2,GL_LIGHT3,GL_LIGHT4,GL_LIGHT5,GL_LIGHT6,GL_LIGHT7};
+    lights = new GLenum[8];
+    lights[0] = GL_LIGHT0;
+    lights[1] = GL_LIGHT1;
+    lights[2] = GL_LIGHT2;
+    lights[3] = GL_LIGHT3;
+    lights[4] = GL_LIGHT4;
+    lights[5] = GL_LIGHT5;
+    lights[6] = GL_LIGHT6;
+    lights[7] = GL_LIGHT7;
     
     //PNG TRANSPARENCY
     glEnable(GL_BLEND);
