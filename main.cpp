@@ -15,6 +15,10 @@
 #include "camera.h"
 #include "constants.h"
 #include "galaxy.h"
+#include "spaceship.h"
+
+float st[3] = {0,0,0};
+float fn[3] = {3,4,-2};
 
 //Material
 GLfloat matSpecular[] = { 0.3, 0.3, 0.3, 1.0 }; //Color Charolazo(Blanco)
@@ -38,6 +42,8 @@ GLenum *lights;
 Galaxy milky_way;
 Camera camera;
 SolarSystem * temp = nullptr;
+
+Spaceship * test;
 
 int hud_width, hud_height;
 bool hasAlpha = true;
@@ -258,6 +264,9 @@ void init(void)
     temp->addRing(7,3000,100,46000,90);  //Uranus - Vertical
     temp->addRing(8,4000,100,46000,6);   //Neptuno
     
+
+    test = new Spaceship(st,fn);
+    
     // reset controls
     controls.forward = false;
     controls.backward = false;
@@ -311,6 +320,7 @@ void display(void)
     _time += timeSpeed;                         //Simular que el tiempo pasa
     
     milky_way.calculatePositions(_time);        //Generar coordenadas basadas en tiempo
+    test->calculatePosition(_time);
     
     setUpPerspective();
     moveCamera();
@@ -324,8 +334,13 @@ void display(void)
     
             glEnable(GL_LIGHTING);    //Nos sirve para iluminar orbitas
                 milky_way.render(); // Pintar Sistema Solar
+                test->render();
             glDisable(GL_LIGHTING);
-            if (showOrbits) milky_way.renderOrbits();
+            if (showOrbits)
+            {
+                test->renderTrajectory();
+                milky_way.renderOrbits();
+            }
         glPopMatrix();
     glDisable(GL_DEPTH_TEST);
     
@@ -483,7 +498,6 @@ int main(int argc, char** argv)
     glutInitWindowPosition(0, 0);
     glutCreateWindow(argv[0]);
     glutSetWindowTitle("A01019102");
-    //printCommands();
     init();
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
