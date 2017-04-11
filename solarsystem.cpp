@@ -81,7 +81,10 @@ RandomSolarSystem::RandomSolarSystem(float x,float y,float z) : SolarSystem(x,y,
 {
     int totalPlanets = Rand::randI(1,10); //De 1 a 10 planetas por sistema
     //Debemos crear 1..10 planetas Random, la cosa aqui es que la distancia del sol se debe ver influenciada por el radio y distancia del anterior + radio del nuevo
-    
+    for (int i = 0; i<totalPlanets; ++i)
+    {
+        //addPlanet(<#float distanceFromSun#>, <#float orbitTime#>, <#float rotationTime#>, <#float radius#>, <#float r#>, <#float g#>, <#float b#>);
+    }
     
 }
 
