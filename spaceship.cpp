@@ -20,58 +20,38 @@
 
 #include "constants.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp> 
+#include <glm/gtx/quaternion.hpp>
+
+
+
 Spaceship::Spaceship(float *initialPos,float *finalPos)
 {
     for (int i = 0; i<3; ++i)
     {
         offset[i] = initialPos[i];
-        finals[i] = finalPos[i];
         deltas[i] = finalPos[i]-initialPos[i];
     }
-    calculatePosition(0.5);
-}
-float Spaceship::getMagnitude(float *vec)
-{
-    return sqrtf(  powf(vec[0],2)+powf(vec[1],2)+powf(vec[2],2)  );
-}
-bool Spaceship::normalize(float *vec)
-{
-    float magnitude = getMagnitude(vec);
-    if (magnitude!=0.0f)
-    {
-        vec[0] /= magnitude;
-        vec[1] /= magnitude;
-        vec[2] /= magnitude;
-        return true;
-    }
-    std::cout<<"error al normalizar vector\n";
-    return false;
-}
-float Spaceship::dotProduct(float *u,float*v)
-{
-    return u[0]*v[0] + u[1]*v[1] + u[2]*v[2];
+    forward = true;
+    lookAt(finalPos); //Seteara los grados de rotacion
+    calculatePosition(0);
 }
 
-void Spaceship::lookAt(float *vec) //TODO : ARREGLAR ESTA MADRE
+void Spaceship::lookAt(float *vec)
 {
-    float dotP = dotProduct( current , vec );
-    std::cout<<dotP<<"\n";
-    dotP = fmodf(dotP, 1);
-    theta = acosf( dotP );
-
-    theta *= 180/3.1459; //Pasamos a grados
-    crossProduct(current, vec, look_rotation); //lookRotation tendra el axis
-    
+    look_rotation[0] = glm::degrees( atanf( (vec[2]-offset[2])/(vec[1]-offset[1]) )) ;
+    look_rotation[1] = glm::degrees( atanf( (vec[2]-offset[2])/(vec[0]-offset[0]) )) ;
+    look_rotation[2] = glm::degrees( atanf( (vec[0]-offset[0])/(vec[1]-offset[1]) ));
 }
 
 void Spaceship::calculatePosition(float t)
 {
-    float p = fmodf(t/10,2); // /10 para que se mueva mas lento
-    bool forward = p<=1;
+    float p = fmodf(t/50,2); // /50 para que se mueva mas lento
+    forward = p<=1;         //Nos da la direccion, de 0 a 1 es de frente, 1.000..1 a 2 es hacia atras
     p = forward?p:1-fmodf(p,1); //Solo nos dejara los decimales el modulo, la resta nos dara la inversa
-    for (int i = 0; i<3; ++i) current[i] = offset[i] + deltas[i]*p; //Ecuacion de recta en 3D
-    
-    lookAt( forward?finals:offset ); //Se debe arreglar esto
+    for (int i = 0; i<3; ++i)
+        current[i] = offset[i] + deltas[i]*p; //Ecuacion de recta en 3D
 }
 
 void Spaceship::renderTrajectory()
@@ -91,18 +71,23 @@ void Spaceship::renderTrajectory()
 void Spaceship::render()
 {
     glPushMatrix();
+    
         glTranslatef(current[0],current[1],current[2] ); //Movernos a donde fue calculado
-        glRotatef(theta, look_rotation[0], look_rotation[1], look_rotation[2]);
+    
+        //Como es un Cono de Origen sale hacia arriba, AL ser nave ajustar para que vean hacia la misma direccion, hacia nosotros
+        glRotatef(90, 1, 0, 0);
+    
+        //Rotar para que apunte hacia el destino
+        glRotatef(look_rotation[0], 1, 0, 0);
+        glRotatef(look_rotation[1], 0, 1, 0);
+        glRotatef(look_rotation[2], 0, 0, 1);
+    
+        if (forward) glScalef(-1, -1, -1); //Switch para que parezca que la nave va defrente
+    
         glutSolidCone(0.05, 0.1, 10, 10);
+        
     
     glPopMatrix();
-}
-
-void Spaceship::crossProduct(float *u, float*v, float* r) //Si esta jalando, uXv y guarda en r
-{
-    r[0] = (u[1]*v[2]) - ( v[1]*u[2] );
-    r[1] = (v[0]*u[2]) - ( u[0]*v[2] );
-    r[2] = (u[0]*v[1]) - ( v[0]*u[1] );
 }
 
 void Spaceship::getPosition(float* vec)
