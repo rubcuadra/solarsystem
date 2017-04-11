@@ -12,7 +12,7 @@
 
 class Galaxy
 {
-private:
+protected:
     std::vector<SolarSystem> sistemas; //Deben ser maximo 8 por la cantidad de luces que permite opengl
 public:
     Galaxy(); //Coordenadas
@@ -27,4 +27,10 @@ public:
     void getSystemPosition(int index, float* vec);
     SolarSystem * getSystem(int index);
     unsigned long getTotalSystems();
+};
+
+class RandomGalaxy : public Galaxy
+{
+public:
+    RandomGalaxy(); 
 };

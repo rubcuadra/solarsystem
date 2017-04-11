@@ -19,6 +19,7 @@ private:
     GLfloat *pos; //Un array de 3 posiciones
 public:
 	SolarSystem(GLfloat *coords); //Coordenadas
+    SolarSystem(float x,float y,float z); //Coordenadas
 	// Manda a llamar a los planetas que calculen sus posiciones
 	void calculatePositions(float time);
 	// Agrega planetas al arreglo
@@ -36,6 +37,13 @@ public:
     // Total de planetas
     unsigned long getTotalPlanets();
     GLfloat * getPosition();
+};
+
+class RandomSolarSystem  : public SolarSystem
+{
+public:
+    RandomSolarSystem(float x,float y,float z); //Numero de planetas en este sistema
+    
 };
 
 

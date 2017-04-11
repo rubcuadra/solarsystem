@@ -7,6 +7,7 @@
 //
 
 #include "galaxy.h"
+#include "rand.h"
 
 Galaxy::Galaxy(){}
 
@@ -57,3 +58,15 @@ SolarSystem * Galaxy::getSystem(int index)
 {
     return &sistemas[index];
 }
+
+RandomGalaxy::RandomGalaxy() : Galaxy()
+{
+    int totalSystems = Rand::randI(1, 3); //De 1 a 7 sistemas solares por galaxia
+
+    //Crear un systema solar Random y agregarlo
+    for (int i = 0; i < totalSystems; ++i)
+        addSystem( new RandomSolarSystem( Rand::randI(-100,100) ,
+                                          Rand::randI(-100,100),
+                                          Rand::randI(-100,100)) );
+}
+
