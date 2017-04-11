@@ -15,10 +15,7 @@
 #include "camera.h"
 #include "constants.h"
 #include "galaxy.h"
-#include "spaceship.h"
-
-float st[3] = {0,0,0};
-float fn[3] = {3,4,-2};
+#include "fleet.h"
 
 //Material
 GLfloat matSpecular[] = { 0.3, 0.3, 0.3, 1.0 }; //Color Charolazo(Blanco)
@@ -40,10 +37,14 @@ bool showOrbits = false;
 GLenum *lights;
 
 Galaxy milky_way;
+RandomFleet fleet(5);
+
+float lookingAt[3];             //Aqui guardaremos a donde estamos viendo
+int current_ship = 0;
+
 Camera camera;
 SolarSystem * temp = nullptr;
 
-Spaceship * test;
 
 int hud_width, hud_height;
 bool hasAlpha = true;
@@ -264,9 +265,6 @@ void init(void)
     temp->addRing(7,3000,100,46000,90);  //Uranus - Vertical
     temp->addRing(8,4000,100,46000,6);   //Neptuno
     
-
-    test = new Spaceship(st,fn);
-    
     // reset controls
     controls.forward = false;
     controls.backward = false;
@@ -320,7 +318,7 @@ void display(void)
     _time += timeSpeed;                         //Simular que el tiempo pasa
     
     milky_way.calculatePositions(_time);        //Generar coordenadas basadas en tiempo
-    test->calculatePosition(_time);
+    fleet.calculatePositions(_time);
     
     setUpPerspective();
     moveCamera();
@@ -334,11 +332,11 @@ void display(void)
     
             glEnable(GL_LIGHTING);    //Nos sirve para iluminar orbitas
                 milky_way.render(); // Pintar Sistema Solar
-                test->render();
+                fleet.render();
             glDisable(GL_LIGHTING);
             if (showOrbits)
             {
-                test->renderTrajectory();
+                fleet.renderTrajectories();
                 milky_way.renderOrbits();
             }
         glPopMatrix();
@@ -375,14 +373,23 @@ void keyDown(unsigned char key, int x, int y)
     {
         if (key-'0' < milky_way.getTotalSystems() )
         {
-            float vec[3];             //Aqui guardaremos sus actuales coordenadas
-            milky_way.getSystemPosition(key-'0', vec);//Obtener su posicion
+            milky_way.getSystemPosition(key-'0', lookingAt);//Obtener su posicion
             //printf("%f %f %f\n",vec[0],vec[1],vec[2]);
-            camera.pointAt(vec);
+            camera.pointAt(lookingAt);
         }
     }
     switch (key)
     {
+        case 'z': //Nave Anterior
+            current_ship = current_ship-1 > -1? current_ship-1: fleet.getTotalShips()-1 ;
+            fleet.getShipPosition(current_ship, lookingAt);
+            camera.pointAt(lookingAt);
+            break;
+        case 'x': //Nave siguiente o reinicia
+            current_ship = current_ship+1 < fleet.getTotalShips()? current_ship+1:0;
+            fleet.getShipPosition(current_ship, lookingAt);
+            camera.pointAt(lookingAt);
+            break;
         case 27:
             exit(0);
             break;

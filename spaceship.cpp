@@ -37,7 +37,26 @@ Spaceship::Spaceship(float *initialPos,float *finalPos)
     lookAt(finalPos); //Seteara los grados de rotacion
     calculatePosition(0);
 }
-
+Spaceship::Spaceship(float x1,float y1,float z1,float x2,float y2,float z2)
+{
+    offset[0] = x1;
+    offset[1] = y1;
+    offset[2] = z1;
+    
+    deltas[0] = x2-x1;
+    deltas[1] = y2-y1;
+    deltas[2] = z2-z1;
+    
+    forward = true;
+    lookAt(x2,y2,z2);       //Seteara los grados de rotacion
+    calculatePosition(0);   //Para que si se manda a llamar render sin calculate no truene
+}
+void Spaceship::lookAt(float x,float y,float z)
+{
+    look_rotation[0] = glm::degrees( atanf( (z-offset[2])/(y-offset[1]) )) ;
+    look_rotation[1] = glm::degrees( atanf( (z-offset[2])/(x-offset[0]) )) ;
+    look_rotation[2] = glm::degrees( atanf( (x-offset[0])/(y-offset[1]) ));
+}
 void Spaceship::lookAt(float *vec)
 {
     look_rotation[0] = glm::degrees( atanf( (vec[2]-offset[2])/(vec[1]-offset[1]) )) ;
