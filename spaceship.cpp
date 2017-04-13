@@ -70,7 +70,7 @@ void Spaceship::lookAt(float *vec)
 
 void Spaceship::calculatePosition(float t)
 {
-    float p = fmodf(t/50,2); // /50 para que se mueva mas lento
+    float p = fmodf(t/500,2); // /50 para que se mueva mas lento
     forward = p<=1;         //Nos da la direccion, de 0 a 1 es de frente, 1.000..1 a 2 es hacia atras
     p = forward?p:1-fmodf(p,1); //Solo nos dejara los decimales el modulo, la resta nos dara la inversa
     for (int i = 0; i<3; ++i)
@@ -107,7 +107,7 @@ void Spaceship::render()
     
         if (forward) glScalef(-1, -1, -1); //Switch para que parezca que la nave va defrente
     
-        glutSolidCone(0.05, 0.1, 10, 10);
+        glutSolidCone(0.25, 0.1, 10, 10);
         
     
     glPopMatrix();

@@ -397,7 +397,11 @@ void keyDown(unsigned char key, int x, int y)
             fleet->getShipPosition(current_ship, lookingAt);
             camera.pointAt(lookingAt);
             break;
-        case 'x': //Nave siguiente o reinicia
+        case 'x': //Nave actual
+            fleet->getShipPosition(current_ship, lookingAt);
+            camera.pointAt(lookingAt);
+            break;
+        case 'c': //Nave siguiente o reinicia
             current_ship = current_ship+1 < fleet->getTotalShips()? current_ship+1:0;
             fleet->getShipPosition(current_ship, lookingAt);
             camera.pointAt(lookingAt);
@@ -411,12 +415,13 @@ void keyDown(unsigned char key, int x, int y)
         case '=':
             timeSpeed *= 2.0f; // Aumentar velocidad
             break;
-        case '[':
-            planetSizeScale /= 1.2; // reducir planetas
-            break;
-        case ']':
-            planetSizeScale *= 1.2; // Aumentar size planeta
-            break;
+//        case '[':
+//            planetSizeScale /= 1.2; // reducir planetas
+//            break;
+//        case ']':
+//            planetSizeScale *= 1.2; // Aumentar size planeta
+//            break;
+//            
         case 'o':
             showOrbits = !showOrbits; //Mostrar/ocultar orbitas
             break;
@@ -506,14 +511,36 @@ void reshape(int w, int h)
     screenHeight = h;
     glViewport (0, 0, (GLsizei) w, (GLsizei) h);
 }
-
+void instructions()
+{
+    std::cout<<"Recuerda que al comenzar el programa puedes pasar la region que desees (re)explorar\n";
+    
+    std::cout<<"La simulacion requiere que tu teclado este en minúsculas y de preferencia en ingles.\n";
+    std::cout<<"Te puedes mover usando WASD \nGirar lateralmente usando QE\nRotar la camara con IJKL\n";
+    
+    std::cout<<"- \t Reducir velocidad del tiempo\n";
+    std::cout<<"= \t Aumentar velocidad del tiempo\n";
+    
+    std::cout<<", \t Reducir velocidad de nave\n";
+    std::cout<<". \t Aumentar velocidad de nave\n";
+    
+    std::cout<<"o \t Mostrar/Esconder Orbitas y trayectorias\n";
+    
+    std::cout<<"z \t Apuntar a una nave anterior\n";
+    std::cout<<"x \t Apuntar a una nave actual\n";
+    std::cout<<"c \t Apuntar a una nave siguiente\n";
+    
+    std::cout<<"0 - 7 \t Apuntar a sistemas solares\n";
+    
+    std::cout<<"ESC te permite acabar la simulacion\n";
+}
 void idle(){/*glutPostRedisplay(); //Mejor usamos timer para que sea tiempo mas real*/}
 
 #include "rand.h"
 int main(int argc, char** argv)
 {
     seed = argc<2 ? time(NULL) : atoi(argv[1]); //Random o lo que nos pasaron
-    std::cout<<"Using seed "<<seed<<"\n";
+    std::cout<<"Explorando región "<<seed<<"\n";
     srand(seed);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
@@ -521,6 +548,7 @@ int main(int argc, char** argv)
     glutInitWindowPosition(0, 0);
     glutCreateWindow(argv[0]);
     glutSetWindowTitle("A01019102");
+    instructions();
     init();
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
