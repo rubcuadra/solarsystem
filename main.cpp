@@ -36,7 +36,8 @@ bool showOrbits = false;
 
 GLenum *lights;
 
-Galaxy milky_way;
+//Galaxy milky_way;
+RandomGalaxy galaxy;
 RandomFleet fleet(5);
 
 float lookingAt[3];             //Aqui guardaremos a donde estamos viendo
@@ -223,47 +224,47 @@ void init(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
-    milky_way.addSystem( new SolarSystem( solarSystemPos ) );
-    
-    temp = milky_way.getSystem(0);
-    //Distancia desde el centro del Sol (km)
-    //Tiempo de traslacion              (Dias terrestres)
-    //Tiempo de rotacion                (Dias terrestres)
-    //Radio                             (km)
-    temp->addPlanet(0, 1, 500, 695500,1.0,1.0,0.0);                            //Sun
-    temp->addPlanet(57910000, 88, 58.6, 2440,0.5529,0.1803,0.5921);            //Mercury
-    temp->addPlanet(108200000, 224.65, 243, 6052,0.6,0.5215,0.3882);           //Venus
-    temp->addPlanet(149600000, 365, 1, 6371,0.1294,0.1843,0.2863);             //Earth
-    temp->addPlanet(227939100, 686, 1.03f, 3389,0.9725,0.5843,0.3882);         //Mars
-    temp->addPlanet(778500000, 4332, 0.4139, 69911,0.5882,0.2941,0);           //Jupiter
-    temp->addPlanet(1433000000, 10759, 0.44375, 58232,0.8118,0.6902,0.5686);   //Saturn
-    temp->addPlanet(2877000000, 30685, 0.718056, 25362,0.8039,0.9529,0.9569);  //Uranus
-    temp->addPlanet(4503000000, 60188, 0.6713, 24622,0.2784,0.4392,0.9661);    //Neptune
-    temp->addPlanet(5906380000, 90616, 6.39, 1137,0.8510,0.6784,0.5255);       //Pluto
-    
-    //Numero de planeta
-    //Distancia desde el centro de su planeta (km)
-    //Dias de traslacion (orbita)
-    //Dias de rotacion
-    //radio
-    
-    temp->addMoon(3, 7000000, 27.3, 27.3, 1738);         //Luna de la Tierra
-    temp->addMoon(6,39090000, 79,79,5150);               //Titan - Saturn
-    temp->addMoon(5,47090000, 3.51 , 3.51, 1568);        //Europa - Jupiter
-    temp->addMoon(5,87090000, 7.15 ,7.15, 5264);         //Ganymede - Jupiter
-    temp->addMoon(5,127090000, 17,17,4120);              //Callisto - Jupiter
-    temp->addMoon(8,16090000, -5.8,-5.8,1353);           //Triton- Neptune
-    temp->addMoon(7,41090000, 8.7,8.7,1578);             //Titania - Uranus
-    
-    //Numero de planeta
-    //Distancia interna
-    //Tiempo de rotacion
-    //Distancia externa
-    //Angulo sobre X
-    
-    temp->addRing(6,20500,100,92000,15); //Saturno - Medio inclinado
-    temp->addRing(7,3000,100,46000,90);  //Uranus - Vertical
-    temp->addRing(8,4000,100,46000,6);   //Neptuno
+//    milky_way.addSystem( new SolarSystem( solarSystemPos ) );
+//    
+//    temp = milky_way.getSystem(0);
+//    //Distancia desde el centro del Sol (km)
+//    //Tiempo de traslacion              (Dias terrestres)
+//    //Tiempo de rotacion                (Dias terrestres)
+//    //Radio                             (km)
+//    temp->addPlanet(0, 1, 500, 695500,1.0,1.0,0.0);                            //Sun
+//    temp->addPlanet(57910000, 88, 58.6, 2440,0.5529,0.1803,0.5921);            //Mercury
+//    temp->addPlanet(108200000, 224.65, 243, 6052,0.6,0.5215,0.3882);           //Venus
+//    temp->addPlanet(149600000, 365, 1, 6371,0.1294,0.1843,0.2863);             //Earth
+//    temp->addPlanet(227939100, 686, 1.03f, 3389,0.9725,0.5843,0.3882);         //Mars
+//    temp->addPlanet(778500000, 4332, 0.4139, 69911,0.5882,0.2941,0);           //Jupiter
+//    temp->addPlanet(1433000000, 10759, 0.44375, 58232,0.8118,0.6902,0.5686);   //Saturn
+//    temp->addPlanet(2877000000, 30685, 0.718056, 25362,0.8039,0.9529,0.9569);  //Uranus
+//    temp->addPlanet(4503000000, 60188, 0.6713, 24622,0.2784,0.4392,0.9661);    //Neptune
+//    temp->addPlanet(5906380000, 90616, 6.39, 1137,0.8510,0.6784,0.5255);       //Pluto
+//    
+//    //Numero de planeta
+//    //Distancia desde el centro de su planeta (km)
+//    //Dias de traslacion (orbita)
+//    //Dias de rotacion
+//    //radio
+//    
+//    temp->addMoon(3, 7000000, 27.3, 27.3, 1738);         //Luna de la Tierra
+//    temp->addMoon(6,39090000, 79,79,5150);               //Titan - Saturn
+//    temp->addMoon(5,47090000, 3.51 , 3.51, 1568);        //Europa - Jupiter
+//    temp->addMoon(5,87090000, 7.15 ,7.15, 5264);         //Ganymede - Jupiter
+//    temp->addMoon(5,127090000, 17,17,4120);              //Callisto - Jupiter
+//    temp->addMoon(8,16090000, -5.8,-5.8,1353);           //Triton- Neptune
+//    temp->addMoon(7,41090000, 8.7,8.7,1578);             //Titania - Uranus
+//    
+//    //Numero de planeta
+//    //Distancia interna
+//    //Tiempo de rotacion
+//    //Distancia externa
+//    //Angulo sobre X
+//    
+//    temp->addRing(6,20500,100,92000,15); //Saturno - Medio inclinado
+//    temp->addRing(7,3000,100,46000,90);  //Uranus - Vertical
+//    temp->addRing(8,4000,100,46000,6);   //Neptuno
     
     // reset controls
     controls.forward = false;
@@ -277,7 +278,15 @@ void init(void)
     controls.yawLeft = false;
     controls.yawRight = false;
     
-    for (int i = 0; i < milky_way.getTotalSystems(); ++i)
+//    for (int i = 0; i < milky_way.getTotalSystems(); ++i)
+//    {
+//        glLightfv( lights[i], GL_AMBIENT, lightAmbient);
+//        glLightfv( lights[i], GL_DIFFUSE, lightDiffuse);
+//        glLightfv( lights[i], GL_SPECULAR, lightSpecular);
+//        glEnable ( lights[i]);
+//    }
+    
+    for (int i = 0; i < galaxy.getTotalSystems(); ++i)
     {
         glLightfv( lights[i], GL_AMBIENT, lightAmbient);
         glLightfv( lights[i], GL_DIFFUSE, lightDiffuse);
@@ -316,8 +325,8 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Buffers
     
     _time += timeSpeed;                         //Simular que el tiempo pasa
+    galaxy.calculatePositions(_time);
     
-    milky_way.calculatePositions(_time);        //Generar coordenadas basadas en tiempo
     fleet.calculatePositions(_time);
     
     setUpPerspective();
@@ -326,18 +335,18 @@ void display(void)
     glEnable(GL_DEPTH_TEST);  //Que pasen detras de otros, permitir profundidades
         glPushMatrix();
     
-            for (int i = 0; i < milky_way.getTotalSystems(); ++i)
-                glLightfv( lights[i] , GL_POSITION, milky_way.getSystem(i)->getPosition() ); //Posicionar luz
+            for (int i = 0; i < galaxy.getTotalSystems(); ++i)
+                glLightfv( lights[i] , GL_POSITION, galaxy.getSystem(i)->getPosition() ); //Posicionar luz
      
     
             glEnable(GL_LIGHTING);    //Nos sirve para iluminar orbitas
-                milky_way.render(); // Pintar Sistema Solar
+                galaxy.render(); // Pintar Sistema Solar
                 fleet.render();
             glDisable(GL_LIGHTING);
             if (showOrbits)
             {
                 fleet.renderTrajectories();
-                milky_way.renderOrbits();
+                galaxy.renderOrbits();
             }
         glPopMatrix();
     glDisable(GL_DEPTH_TEST);
@@ -371,9 +380,9 @@ void keyDown(unsigned char key, int x, int y)
     // check for numerical keys
     if ('0' <= key&&key <= '9')
     {
-        if (key-'0' < milky_way.getTotalSystems() )
+        if (key-'0' < galaxy.getTotalSystems() )
         {
-            milky_way.getSystemPosition(key-'0', lookingAt);//Obtener su posicion
+            galaxy.getSystemPosition(key-'0', lookingAt);//Obtener su posicion
             //printf("%f %f %f\n",vec[0],vec[1],vec[2]);
             camera.pointAt(lookingAt);
         }
@@ -497,8 +506,10 @@ void reshape(int w, int h)
 
 void idle(){/*glutPostRedisplay(); //Mejor usamos timer para que sea tiempo mas real*/}
 
+#include "rand.h"
 int main(int argc, char** argv)
 {
+    srand(time(NULL));
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
     glutInitWindowSize(screenWidth,screenHeight);

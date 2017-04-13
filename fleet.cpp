@@ -65,7 +65,7 @@ RandomFleet::RandomFleet(int numShips) : Fleet()
                 Rand::randI(-10,10),
                 Rand::randI(-10,10),
                 Rand::randI(-10,10),
-                Rand::randI(-10,0));
+                Rand::randI(-10,10));
     
     //test = new Spaceship(0,0,0,3,4,-2); //Con este jala bien...
 }

@@ -14,11 +14,11 @@ class Rand
 public:
     static int randI(int nMin, int nMax)
     {
-        return nMin + (int)((double)rand() / (RAND_MAX+1) * (nMax-nMin+1));
+        return (int)(rand()%nMax)+nMin;//nMin + (int)((double)rand() / (RAND_MAX+1) * (nMax-nMin+1));
     }
     static unsigned long randL(long nMin, long nMax)
     {
-        return nMin + (long)((double)rand() / (RAND_MAX+1) * (nMax-nMin+1));
+        return (long)(rand()%nMax)+nMin;
     }
     static float randColor()
     {
