@@ -62,7 +62,7 @@ SolarSystem * Galaxy::getSystem(int index)
 
 RandomGalaxy::RandomGalaxy() : Galaxy()
 {
-    int totalSystems = Rand::randI(1, 3); //De 1 a 7 sistemas solares por galaxia
+    int totalSystems = Rand::randI(1,7); //De 1 a 7 sistemas solares por galaxia
     std::cout<<"Total Systems "<<totalSystems<<"\n";
     //Crear un systema solar Random y agregarlo
     for (int i = 0; i < totalSystems; ++i)

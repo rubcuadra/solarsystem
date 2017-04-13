@@ -42,8 +42,8 @@ int current_ship = 0;
 Camera camera;
 SolarSystem * temp = nullptr;
 
-RandomGalaxy galaxy;
-RandomFleet fleet(5);
+RandomGalaxy *galaxy;
+RandomFleet *fleet;
 
 int hud_width, hud_height;
 bool hasAlpha = true;
@@ -222,6 +222,9 @@ void init(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
+    fleet = new RandomFleet(5);
+    galaxy = new RandomGalaxy();
+    
 //    milky_way.addSystem( new SolarSystem( solarSystemPos ) );
 //    
 //    temp = milky_way.getSystem(0);
@@ -284,7 +287,7 @@ void init(void)
 //        glEnable ( lights[i]);
 //    }
     
-    for (int i = 0; i < galaxy.getTotalSystems(); ++i)
+    for (int i = 0; i < galaxy->getTotalSystems(); ++i)
     {
         glLightfv( lights[i], GL_AMBIENT, lightAmbient);
         glLightfv( lights[i], GL_DIFFUSE, lightDiffuse);
@@ -323,9 +326,9 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Buffers
     
     _time += timeSpeed;                         //Simular que el tiempo pasa
-    galaxy.calculatePositions(_time);
+    galaxy->calculatePositions(_time);
     
-    fleet.calculatePositions(_time);
+    fleet->calculatePositions(_time);
     
     setUpPerspective();
     moveCamera();
@@ -333,20 +336,20 @@ void display(void)
     glEnable(GL_DEPTH_TEST);  //Que pasen detras de otros, permitir profundidades
         glPushMatrix();
     
-            for (int i = 0; i < galaxy.getTotalSystems(); ++i)
+            for (int i = 0; i < galaxy->getTotalSystems(); ++i)
             {
-                glLightfv( lights[i] , GL_POSITION, galaxy.getSystem(i)->getPosition() ); //Posicionar luz en el Sol
+                glLightfv( lights[i] , GL_POSITION, galaxy->getSystem(i)->getPosition() ); //Posicionar luz en el Sol
             }
     
             glEnable(GL_LIGHTING);    //Nos sirve para iluminar orbitas
-                galaxy.render();      //Pintar Sistema Solar
-                fleet.render();
+                galaxy->render();      //Pintar Sistema Solar
+                fleet->render();
             glDisable(GL_LIGHTING);
     
             if (showOrbits)
             {
-                fleet.renderTrajectories();
-                galaxy.renderOrbits();
+                fleet->renderTrajectories();
+                galaxy->renderOrbits();
             }
         glPopMatrix();
     glDisable(GL_DEPTH_TEST);
@@ -380,9 +383,9 @@ void keyDown(unsigned char key, int x, int y)
     // check for numerical keys
     if ('0' <= key&&key <= '9')
     {
-        if (key-'0' < galaxy.getTotalSystems() )
+        if (key-'0' < galaxy->getTotalSystems() )
         {
-            galaxy.getSystemPosition(key-'0', lookingAt);//Obtener su posicion
+            galaxy->getSystemPosition(key-'0', lookingAt);//Obtener su posicion
             //printf("%f %f %f\n",vec[0],vec[1],vec[2]);
             camera.pointAt(lookingAt);
         }
@@ -390,13 +393,13 @@ void keyDown(unsigned char key, int x, int y)
     switch (key)
     {
         case 'z': //Nave Anterior
-            current_ship = current_ship-1 > -1? current_ship-1: fleet.getTotalShips()-1 ;
-            fleet.getShipPosition(current_ship, lookingAt);
+            current_ship = current_ship-1 > -1? current_ship-1: fleet->getTotalShips()-1 ;
+            fleet->getShipPosition(current_ship, lookingAt);
             camera.pointAt(lookingAt);
             break;
         case 'x': //Nave siguiente o reinicia
-            current_ship = current_ship+1 < fleet.getTotalShips()? current_ship+1:0;
-            fleet.getShipPosition(current_ship, lookingAt);
+            current_ship = current_ship+1 < fleet->getTotalShips()? current_ship+1:0;
+            fleet->getShipPosition(current_ship, lookingAt);
             camera.pointAt(lookingAt);
             break;
         case 27:
