@@ -51,7 +51,7 @@ Spaceship::Spaceship(float x1,float y1,float z1,float x2,float y2,float z2)
     lookAt(x2,y2,z2);       //Seteara los grados de rotacion
     calculatePosition(0);   //Para que si se manda a llamar render sin calculate no truene
 }
-void Spaceship::lookAt(float x,float y,float z)
+void Spaceship::lookAt(float x,float y,float z)  //TODO Fixear el Look
 {
     look_rotation[0] = glm::degrees( atanf( (z-offset[2])/(y-offset[1]) )) ;
     look_rotation[1] = glm::degrees( atanf( (z-offset[2])/(x-offset[0]) )) ;

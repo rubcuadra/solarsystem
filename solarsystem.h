@@ -14,7 +14,7 @@
 
 class SolarSystem
 {
-private:
+protected:
 	std::vector<Planet> planets;
     GLfloat *pos; //Un array de 3 posiciones
 public:
@@ -37,12 +37,13 @@ public:
     // Total de planetas
     unsigned long getTotalPlanets();
     GLfloat * getPosition();
+    void addPlanet(Planet p);
 };
 
 class RandomSolarSystem  : public SolarSystem
 {
 public:
-    RandomSolarSystem(float x,float y,float z); //Numero de planetas en este sistema
+    RandomSolarSystem(float x,float y,float z); 
     
 };
 

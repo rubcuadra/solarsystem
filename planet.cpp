@@ -9,6 +9,7 @@
     #include <GL/glut.h>
 #endif
 #include "constants.h"
+#include "rand.h"
 
 float planetSizeScale = 0.000005f;
 
@@ -110,4 +111,18 @@ void Planet::addMoon(float distanceFromPlanet, float orbitTime, float rotationTi
 void Planet::addRing(float inner_distanceFromPlanet, float rotationTime, float outer_distanceFromPlanet,float angle)
 {
     rings.push_back(Ring(inner_distanceFromPlanet,rotationTime,outer_distanceFromPlanet,angle));
+}
+
+RandomPlanet::RandomPlanet(float distanceFromSun,float radius) : Planet(distanceFromSun,Rand::randI(1, 100000),Rand::randI(1, 100000),radius,Rand::randColor(),Rand::randColor(),Rand::randColor())
+{
+    int moons = Rand::randI(0,6); //Maximo unas 6 lunas estara bien
+    int distance = 7000000*radius/6371; //Initial
+    
+    for (int i = 0; i < moons; i++)
+    {
+        float rad = Rand::randI(30, radius/2);
+        addMoon(distance, Rand::randI(-100, 100), 1, rad);
+        distance+=rad*2;
+    }
+    //Agregarle anillos
 }

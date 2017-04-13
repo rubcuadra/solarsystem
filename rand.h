@@ -16,4 +16,12 @@ public:
     {
         return nMin + (int)((double)rand() / (RAND_MAX+1) * (nMax-nMin+1));
     }
+    static unsigned long randL(long nMin, long nMax)
+    {
+        return nMin + (long)((double)rand() / (RAND_MAX+1) * (nMax-nMin+1));
+    }
+    static float randColor()
+    {
+        return ((double) rand() / (RAND_MAX));
+    }
 };

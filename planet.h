@@ -14,7 +14,7 @@
 
 class Planet
 {
-private:
+protected:
 	float distanceFromSun;
 	// Tiempo en orbitar
 	float orbitTime;
@@ -43,5 +43,12 @@ public:
 	// Agregar lunas y anillos
 	void addMoon(float distanceFromPlanet, float orbitTime, float rotationTime, float radius);
     void addRing(float inner_distanceFromPlanet, float rotationTime, float outer_distanceFromPlanet,float angle);
+};
+
+class RandomPlanet : public Planet
+{
+public:
+    RandomPlanet(float distanceFromSun,float radius);
+    
 };
 
