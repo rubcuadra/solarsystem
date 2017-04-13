@@ -292,3 +292,13 @@ void Camera::yawRight(void)
 	rotateAroundVec(rightVec, upVec, -cameraTurnSpeed, tempVec);
 	vectorCopy(rightVec, tempVec);
 }
+
+float Camera::getSpeed()
+{
+    return cameraSpeed;
+}
+float Camera::getTurnSpeed()
+{
+    return cameraTurnSpeed;
+}
+

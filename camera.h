@@ -74,4 +74,7 @@ public:
 
 	// yaw right
 	void yawRight(void);
+    
+    float getSpeed();
+    float getTurnSpeed();
 };

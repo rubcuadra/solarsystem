@@ -16,6 +16,7 @@
 #include "constants.h"
 #include "galaxy.h"
 #include "fleet.h"
+#include <vector>
 
 //Material
 GLfloat matSpecular[] = { 0.3, 0.3, 0.3, 1.0 }; //Color Charolazo(Blanco)
@@ -47,6 +48,8 @@ RandomFleet *fleet;
 
 int hud_width, hud_height;
 bool hasAlpha = true;
+
+std::vector<char *> huds;
 char filename[] = "assets/cockpit.png";
 
 //Valores para controlar desplazamientos
@@ -324,6 +327,69 @@ void setUpPerspective() //Inicializar perspectiva
     glLoadIdentity();
 }
 
+void HelpRenderBitmapString(float x, float y, void *font, std::string s)
+{
+    char *c;
+    /*  set position to start drawing fonts */
+    glRasterPos2f(x, y);
+    /*  loop all the characters in the string */
+    for (int i = 0; i < s.size(); i++)
+    {
+        glutBitmapCharacter(font, s[i]);
+    }
+    
+}
+
+int linestart = 10;		/* start point on y axis for text lines */
+int linespace = 20;		/* spac betwwen text lines */
+void *Help_Font = GLUT_BITMAP_8_BY_13;
+
+void HelpDisplay(GLint ww, GLint wh)
+{
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+        glColor3f(1.0f, 1.0f, 1.0f);
+        /*  switch to projection mode */
+        glMatrixMode(GL_PROJECTION);
+        /*  save previous matrix which contains the  */
+        /* settings for the perspective projection */
+        glPushMatrix();
+            /*  reset matrix */
+            glLoadIdentity();
+            /*  set a 2D orthographic projection */
+            gluOrtho2D(0, ww, 0, wh);
+            /*  invert the y axis, down is positive */
+            glScalef(1, -1, 1);
+            /*  mover the origin from the bottom left corner */
+            /*  to the upper left corner */
+            glTranslatef(0, -wh, 0);
+            glMatrixMode(GL_MODELVIEW);
+            
+            
+            glPushMatrix();
+                glLoadIdentity();
+    
+                linestart = 10; //Regresar al inicio
+    
+                HelpRenderBitmapString(30, linestart +=
+                                       linespace, Help_Font, "HUD");
+                HelpRenderBitmapString(30, linestart +=
+                                       linespace, Help_Font, "---------");
+                HelpRenderBitmapString(30, linestart +=
+                                       linespace, Help_Font, std::to_string(camera.getSpeed()) );
+    
+            glPopMatrix();
+        /*  set the current matrix to GL_PROJECTION */
+        glMatrixMode(GL_PROJECTION);
+        /*  restore previous settings */
+        glPopMatrix();
+    /*  get back to GL_MODELVIEW matrix */
+    glMatrixMode(GL_MODELVIEW);
+        
+    glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+}
+
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Buffers
@@ -376,8 +442,9 @@ void display(void)
             glTexCoord2f(1.0f, 1.0f);	glVertex2f(screenWidth, screenHeight);
             glTexCoord2f(0.0f, 1.0f);	glVertex2f(0.0f, screenHeight);
         glEnd();
-    
     glDisable(GL_TEXTURE_2D);
+    
+    HelpDisplay(screenWidth,screenHeight);
     
     glutSwapBuffers();        //End
 }
