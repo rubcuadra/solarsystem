@@ -33,7 +33,7 @@ GLubyte *textureImage;
 
 int screenWidth=1200,screenHeight=700;
 bool showOrbits = false;
-
+unsigned seed;
 GLenum *lights;
 
 float lookingAt[3];             //Aqui guardaremos a donde estamos viendo
@@ -222,7 +222,7 @@ void init(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
-    fleet = new RandomFleet(5);
+    fleet = new RandomFleet();
     galaxy = new RandomGalaxy();
     
 //    milky_way.addSystem( new SolarSystem( solarSystemPos ) );
@@ -512,8 +512,7 @@ void idle(){/*glutPostRedisplay(); //Mejor usamos timer para que sea tiempo mas 
 #include "rand.h"
 int main(int argc, char** argv)
 {
-    unsigned seed = time(NULL);
-    seed = 1;
+    seed = argc<2 ? time(NULL) : atoi(argv[1]); //Random o lo que nos pasaron
     std::cout<<"Using seed "<<seed<<"\n";
     srand(seed);
     glutInit(&argc, argv);

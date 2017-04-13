@@ -9,6 +9,7 @@
 #include "fleet.h"
 #include "spaceship.h"
 #include "rand.h"
+#include <iostream>
 
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
@@ -56,16 +57,19 @@ void Fleet::getShipPosition(int index, float* vec)
     ships[index].getPosition(vec); //Llenara vec con la pos
 }
 
-RandomFleet::RandomFleet(int numShips) : Fleet()
+RandomFleet::RandomFleet() : Fleet()
 {
-    
+    int numShips = Rand::randI(5, 10);
+    std::cout<<"Total Ships "<<numShips<<"\n";
     for (int i = 0; i < numShips; ++i)
-        addShip(Rand::randI(-10,10),
-                Rand::randI(-10,10),
-                Rand::randI(-10,10),
-                Rand::randI(-10,10),
-                Rand::randI(-10,10),
-                Rand::randI(-10,10));
-    
+    {
+        std::cout<<"\tShip "<<i<<"\n";
+        addShip(Rand::randI(-1000,1000),
+                Rand::randI(-1000,1000),
+                Rand::randI(-1000,1000),
+                Rand::randI(-1000,1000),
+                Rand::randI(-1000,1000),
+                Rand::randI(-1000,1000));
+    }
     //test = new Spaceship(0,0,0,3,4,-2); //Con este jala bien...
 }

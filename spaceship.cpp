@@ -28,6 +28,8 @@
 
 Spaceship::Spaceship(float *initialPos,float *finalPos)
 {
+    std::cout<<"\t\t("<<initialPos[0]<<","<<initialPos[1]<<","<<initialPos[2]<<")\n";
+    std::cout<<"\t\t("<<finalPos[0]<<","<<finalPos[1]<<","<<finalPos[2]<<")\n";
     for (int i = 0; i<3; ++i)
     {
         offset[i] = initialPos[i];
@@ -39,6 +41,8 @@ Spaceship::Spaceship(float *initialPos,float *finalPos)
 }
 Spaceship::Spaceship(float x1,float y1,float z1,float x2,float y2,float z2)
 {
+    std::cout<<"\t\t("<<x1<<","<<y1<<","<<z1<<")\n";
+    std::cout<<"\t\t("<<x2<<","<<y2<<","<<z2<<")\n";
     offset[0] = x1;
     offset[1] = y1;
     offset[2] = z1;

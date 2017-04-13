@@ -98,7 +98,7 @@ RandomSolarSystem::RandomSolarSystem(float x,float y,float z) : SolarSystem(x,y,
     for (int i = 1; i<totalPlanets; ++i) //El 0 sera el Sol
     {
         planet_size = Rand::randI(80,100000);
-        std::cout<<"\t\tPlaneta "<<i<<" "<<offset_from_sun<<" "<<planet_size<<"r\n";
+        std::cout<<"\t\tPlaneta "<<i<<": "<<offset_from_sun<<" "<<planet_size<<"r\n";
         addPlanet( RandomPlanet(offset_from_sun, planet_size));
         offset_from_sun += Rand::randL(planet_size+57910000,planet_size*5+83263838+220960489*2);
     }

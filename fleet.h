@@ -33,5 +33,5 @@ public:
 class RandomFleet : public Fleet
 {
 public:
-    RandomFleet(int total);
+    RandomFleet();
 };

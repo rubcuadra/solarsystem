@@ -66,8 +66,8 @@ RandomGalaxy::RandomGalaxy() : Galaxy()
     std::cout<<"Total Systems "<<totalSystems<<"\n";
     //Crear un systema solar Random y agregarlo
     for (int i = 0; i < totalSystems; ++i)
-        addSystem( new RandomSolarSystem( Rand::randI(-100,100) ,
-                                          Rand::randI(-100,100),
-                                          Rand::randI(-100,100)) );
+        addSystem( new RandomSolarSystem( Rand::randI(-1000,1000) ,
+                                          Rand::randI(-1000,1000),
+                                          Rand::randI(-1000,1000)) );
 }
 
