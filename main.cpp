@@ -36,16 +36,14 @@ bool showOrbits = false;
 
 GLenum *lights;
 
-//Galaxy milky_way;
-RandomGalaxy galaxy;
-RandomFleet fleet(5);
-
 float lookingAt[3];             //Aqui guardaremos a donde estamos viendo
 int current_ship = 0;
 
 Camera camera;
 SolarSystem * temp = nullptr;
 
+RandomGalaxy galaxy;
+RandomFleet fleet(5);
 
 int hud_width, hud_height;
 bool hasAlpha = true;
@@ -336,13 +334,15 @@ void display(void)
         glPushMatrix();
     
             for (int i = 0; i < galaxy.getTotalSystems(); ++i)
-                glLightfv( lights[i] , GL_POSITION, galaxy.getSystem(i)->getPosition() ); //Posicionar luz
-     
+            {
+                glLightfv( lights[i] , GL_POSITION, galaxy.getSystem(i)->getPosition() ); //Posicionar luz en el Sol
+            }
     
             glEnable(GL_LIGHTING);    //Nos sirve para iluminar orbitas
-                galaxy.render(); // Pintar Sistema Solar
+                galaxy.render();      //Pintar Sistema Solar
                 fleet.render();
             glDisable(GL_LIGHTING);
+    
             if (showOrbits)
             {
                 fleet.renderTrajectories();
@@ -509,7 +509,10 @@ void idle(){/*glutPostRedisplay(); //Mejor usamos timer para que sea tiempo mas 
 #include "rand.h"
 int main(int argc, char** argv)
 {
-    srand(time(NULL));
+    unsigned seed = time(NULL);
+    seed = 1;
+    std::cout<<"Using seed "<<seed<<"\n";
+    srand(seed);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
     glutInitWindowSize(screenWidth,screenHeight);

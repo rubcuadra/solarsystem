@@ -5,10 +5,11 @@
 SolarSystem::SolarSystem(GLfloat *coords):pos(coords){}
 SolarSystem::SolarSystem(float x,float y,float z)
 {
-    pos = new GLfloat[3];
+    pos = new GLfloat[4];
     pos[0] = x;
     pos[1] = y;
     pos[2] = z;
+    pos[3] = 1.0; //Para la luz
 }
 
 void SolarSystem::calculatePositions(float time)
@@ -84,7 +85,8 @@ void SolarSystem::addPlanet(Planet p)
 RandomSolarSystem::RandomSolarSystem(float x,float y,float z) : SolarSystem(x,y,z)
 {
     int totalPlanets = Rand::randI(1,10); //De 1 a 10 planetas por sistema
-    std::cout<<"Total Planets "<<totalPlanets<<"\n";
+    std::cout<<"\tTotal Planets "<<totalPlanets;
+    std::cout<< "("<<x<<","<<y<<","<<z<<")\n";
     
     //Debemos crear 1..10 planetas Random, la cosa aqui es que la distancia del sol se debe ver influenciada por el radio y distancia del anterior + radio del nuevo
     
@@ -93,12 +95,12 @@ RandomSolarSystem::RandomSolarSystem(float x,float y,float z) : SolarSystem(x,y,
     long offset_from_sun = Rand::randL(57910000,83263838); //Initial
     long planet_size;
     
-    
     for (int i = 1; i<totalPlanets; ++i) //El 0 sera el Sol
     {
         planet_size = Rand::randI(80,100000);
+        std::cout<<"\t\tPlaneta "<<i<<" "<<offset_from_sun<<" "<<planet_size<<"r\n";
         addPlanet( RandomPlanet(offset_from_sun, planet_size));
-        offset_from_sun += Rand::randL(planet_size,planet_size*5); ; //Minimo nos alejamos un radio de el hasta 5 veces el
+        offset_from_sun += Rand::randL(planet_size+57910000,planet_size*5+83263838+220960489*2);
     }
 }
 
