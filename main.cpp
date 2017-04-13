@@ -26,7 +26,7 @@ GLfloat lightAmbient[] = { 1.0, 1.0, 1.0, 0.5 }; //Ambiente
 GLfloat lightDiffuse[] = { 1.0, 1.0, 1.0, 1.0 }; //Difusa
 GLfloat lightSpecular[] = { 1.0, 1.0, 1.0, 1.0 }; //Specular blanca
 
-GLfloat solarSystemPos[] = { 1.0, 2.0, 3.0, 1.0 }; //SOL
+//GLfloat solarSystemPos[] = { 1.0, 2.0, 3.0, 1.0 }; //SOL
 GLfloat sunAmbience[] = {1.0,1.0,0.0, 1.0 };
 
 GLubyte *textureImage;
@@ -211,11 +211,14 @@ void init(void)
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     bool success = loadPngImage(filename, hud_width, hud_height, hasAlpha, &textureImage);
-    if (!success) {
+    
+    if (!success)
+    {
         std::cout << "Unable to load png file" << std::endl;
-        return;
+        exit(0);
     }
-    std::cout << "Image loaded " << hud_width << " " << hud_height << " alpha " << hasAlpha << std::endl;
+    //std::cout << "Image loaded " << hud_width << " " << hud_height << " alpha " << hasAlpha << std::endl;
+    
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
