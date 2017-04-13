@@ -47,7 +47,7 @@ RandomFleet *fleet;
 
 int hud_width, hud_height;
 bool hasAlpha = true;
-char filename[] = "assets/red_hud.png";
+char filename[] = "assets/cockpit.png";
 
 //Valores para controlar desplazamientos
 double _time = 2.552f;
