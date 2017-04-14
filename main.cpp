@@ -347,7 +347,6 @@ void *Help_Font = GLUT_BITMAP_8_BY_13;
 void HelpDisplay(GLint ww, GLint wh)
 {
     glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
         glColor3f(1.0f, 1.0f, 1.0f);
         /*  switch to projection mode */
         glMatrixMode(GL_PROJECTION);
@@ -372,11 +371,22 @@ void HelpDisplay(GLint ww, GLint wh)
                 linestart = 10; //Regresar al inicio
     
                 HelpRenderBitmapString(30, linestart +=
-                                       linespace, Help_Font, "HUD");
+                                       linespace, Help_Font, "Region: "+std::to_string(seed) );
+                HelpRenderBitmapString(30, linestart +=
+                                       linespace, Help_Font, "Systems: "+std::to_string(galaxy->getTotalSystems()) );
                 HelpRenderBitmapString(30, linestart +=
                                        linespace, Help_Font, "---------");
                 HelpRenderBitmapString(30, linestart +=
-                                       linespace, Help_Font, std::to_string(camera.getSpeed()) );
+                                       linespace, Help_Font, "Speed: "+std::to_string(camera.getSpeed()) );
+                HelpRenderBitmapString(30, linestart +=
+                                       linespace, Help_Font, "Time speed: "+std::to_string(timeSpeed) );
+                HelpRenderBitmapString(30, linestart +=
+                                       linespace, Help_Font, showOrbits?"Orbits Activated":"Orbits Deactivated");
+                HelpRenderBitmapString(30, linestart +=
+                           linespace, Help_Font, "("+std::to_string(camera.getPositionX())+","
+                                                    +std::to_string(camera.getPositionY())+","
+                                                    +std::to_string(camera.getPositionZ())+")");
+    
     
             glPopMatrix();
         /*  set the current matrix to GL_PROJECTION */
@@ -385,9 +395,8 @@ void HelpDisplay(GLint ww, GLint wh)
         glPopMatrix();
     /*  get back to GL_MODELVIEW matrix */
     glMatrixMode(GL_MODELVIEW);
-        
     glEnable(GL_LIGHTING);
-    glEnable(GL_TEXTURE_2D);
+    
 }
 
 void display(void)
@@ -442,9 +451,12 @@ void display(void)
             glTexCoord2f(1.0f, 1.0f);	glVertex2f(screenWidth, screenHeight);
             glTexCoord2f(0.0f, 1.0f);	glVertex2f(0.0f, screenHeight);
         glEnd();
+    
     glDisable(GL_TEXTURE_2D);
     
     HelpDisplay(screenWidth,screenHeight);
+    
+    
     
     glutSwapBuffers();        //End
 }
@@ -480,10 +492,12 @@ void keyDown(unsigned char key, int x, int y)
             exit(0);
             break;
         case '-':
-            timeSpeed /= 2.0f; // Disminuir velocidad
+            if (timeSpeed>0.00001)
+                timeSpeed /= 2.0f; // Disminuir velocidad
             break;
         case '=':
-            timeSpeed *= 2.0f; // Aumentar velocidad
+            if (timeSpeed < 200)
+                timeSpeed *= 2.0f; // Aumentar velocidad
             break;
 //        case '[':
 //            planetSizeScale /= 1.2; // reducir planetas

@@ -77,4 +77,7 @@ public:
     
     float getSpeed();
     float getTurnSpeed();
+    float getPositionX();
+    float getPositionY();
+    float getPositionZ();
 };

@@ -162,7 +162,7 @@ void Camera::pointAt(float* targetVec)
 // speed up the camera speed
 void Camera::speedUp(void)
 {
-	if (cameraSpeed < 1.0f)
+	if (cameraSpeed < 5.0f)
 		cameraSpeed *= 2;
 }
 
@@ -301,4 +301,6 @@ float Camera::getTurnSpeed()
 {
     return cameraTurnSpeed;
 }
-
+float Camera::getPositionX(){return position[0];}
+float Camera::getPositionY(){return position[1];}
+float Camera::getPositionZ(){return position[2];}
