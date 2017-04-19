@@ -17,6 +17,12 @@
 #include "galaxy.h"
 #include "fleet.h"
 #include <vector>
+#include "rand.h"
+
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
 
 //Material
 GLfloat matSpecular[] = { 0.3, 0.3, 0.3, 1.0 }; //Color Charolazo(Blanco)
@@ -456,8 +462,6 @@ void display(void)
     
     HelpDisplay(screenWidth,screenHeight);
     
-    
-    
     glutSwapBuffers();        //End
 }
 void keyDown(unsigned char key, int x, int y)
@@ -620,11 +624,51 @@ void instructions()
 }
 void idle(){/*glutPostRedisplay(); //Mejor usamos timer para que sea tiempo mas real*/}
 
-#include "rand.h"
+void getDataFromDB(int region) //Region = seed
+{
+    try
+    {
+        sql::Driver *driver;
+        sql::Connection *con;
+        sql::Statement *stmt;
+        sql::ResultSet *res;
+        
+        /* Create a connection */
+        driver = get_driver_instance();
+        con = driver->connect("tcp://127.0.0.1:3306", "root", "root");
+        /* Connect to the MySQL test database */
+        con->setSchema("dbii");
+        
+        stmt = con->createStatement();
+        res = stmt->executeQuery("SELECT * from region");
+
+        while (res->next())
+        {
+            /* Access column data by alias or column name */
+            std::cout << res->getInt("rid") <<","<<res->getInt("gid")<<","<<res->getString("name")<<"\n";
+            /* Access column data by numeric offset, 1 is the first column */
+            //std::cout << "\t... MySQL says it again: ";
+            //std::cout << res->getString(1) << "\n";
+        }
+        delete res;
+        delete stmt;
+        delete con;
+        
+    } catch (sql::SQLException &e)
+    {
+        std::cout << "# ERR: SQLException in " << __FILE__;
+        std::cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << "\n";
+        std::cout << "# ERR: " << e.what();
+        std::cout << " (MySQL error code: " << e.getErrorCode();
+        std::cout << ", SQLState: " << e.getSQLState() << " )" << "\n";
+    }
+}
+
 int main(int argc, char** argv)
 {
     seed = argc<2 ? time(NULL) : atoi(argv[1]); //Random o lo que nos pasaron
     std::cout<<"Explorando región "<<seed<<"\n";
+    getDataFromDB(seed);//Se le pasa la region
     srand(seed);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
