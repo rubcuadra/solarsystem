@@ -1,4 +1,3 @@
 #!/usr/local/bin/fish
-g++ *.cpp *.h -framework OpenGL -framework GLUT -I/usr/local/include -L/usr/local/lib -lpng
+g++ *.cpp -framework OpenGL -framework GLUT -I/usr/local/include -L/usr/local/lib -lpng -lmysqlcppconn
 ./a.out
-rm *.gch
