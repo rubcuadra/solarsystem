@@ -291,20 +291,12 @@ void init(void)
     controls.yawLeft = false;
     controls.yawRight = false;
     
-//    for (int i = 0; i < milky_way.getTotalSystems(); ++i)
-//    {
-//        glLightfv( lights[i], GL_AMBIENT, lightAmbient);
-//        glLightfv( lights[i], GL_DIFFUSE, lightDiffuse);
-//        glLightfv( lights[i], GL_SPECULAR, lightSpecular);
-//        glEnable ( lights[i]);
-//    }
-    
     for (int i = 0; i < galaxy->getTotalSystems(); ++i)
     {
         glLightfv( lights[i], GL_AMBIENT, lightAmbient);
         glLightfv( lights[i], GL_DIFFUSE, lightDiffuse);
         glLightfv( lights[i], GL_SPECULAR, lightSpecular);
-        glEnable ( lights[i]);
+        //glEnable ( lights[i]);
     }
         
     timer(0);
@@ -464,6 +456,11 @@ void display(void)
     
     glutSwapBuffers();        //End
 }
+void setLight(GLenum l)
+{
+    for (int i = 0; i<galaxy->getTotalSystems(); ++i) glDisable(lights[i]);
+    glEnable(l);
+}
 void keyDown(unsigned char key, int x, int y)
 {
     // check for numerical keys
@@ -474,6 +471,8 @@ void keyDown(unsigned char key, int x, int y)
             galaxy->getSystemPosition(key-'0', lookingAt);//Obtener su posicion
             //printf("%f %f %f\n",vec[0],vec[1],vec[2]);
             camera.pointAt(lookingAt);
+            
+            setLight( lights[key-'0'] );
         }
     }
     switch (key)
