@@ -18,12 +18,14 @@
 #include "fleet.h"
 #include <vector>
 #include "rand.h"
+#include "player.h"
 
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
+Player *player;
 //Material
 GLfloat matSpecular[] = { 0.3, 0.3, 0.3, 1.0 }; //Color Charolazo(Blanco)
 GLfloat matAmbience[] = { 0.3, 0.3, 0.3, 1.0 }; //Color del planeta
@@ -56,7 +58,7 @@ int hud_width, hud_height;
 bool hasAlpha = true;
 
 std::vector<char *> huds;
-char filename[] = "assets/cockpit.png";
+char filename[] = "assets/imgs/cockpit.png";
 
 //Valores para controlar desplazamientos
 double _time = 2.552f;
@@ -237,48 +239,6 @@ void init(void)
     fleet = new RandomFleet();
     galaxy = new RandomGalaxy();
     
-//    milky_way.addSystem( new SolarSystem( solarSystemPos ) );
-//    
-//    temp = milky_way.getSystem(0);
-//    //Distancia desde el centro del Sol (km)
-//    //Tiempo de traslacion              (Dias terrestres)
-//    //Tiempo de rotacion                (Dias terrestres)
-//    //Radio                             (km)
-//    temp->addPlanet(0, 1, 500, 695500,1.0,1.0,0.0);                            //Sun
-//    temp->addPlanet(57910000, 88, 58.6, 2440,0.5529,0.1803,0.5921);            //Mercury
-//    temp->addPlanet(108200000, 224.65, 243, 6052,0.6,0.5215,0.3882);           //Venus
-//    temp->addPlanet(149600000, 365, 1, 6371,0.1294,0.1843,0.2863);             //Earth
-//    temp->addPlanet(227939100, 686, 1.03f, 3389,0.9725,0.5843,0.3882);         //Mars
-//    temp->addPlanet(778500000, 4332, 0.4139, 69911,0.5882,0.2941,0);           //Jupiter
-//    temp->addPlanet(1433000000, 10759, 0.44375, 58232,0.8118,0.6902,0.5686);   //Saturn
-//    temp->addPlanet(2877000000, 30685, 0.718056, 25362,0.8039,0.9529,0.9569);  //Uranus
-//    temp->addPlanet(4503000000, 60188, 0.6713, 24622,0.2784,0.4392,0.9661);    //Neptune
-//    temp->addPlanet(5906380000, 90616, 6.39, 1137,0.8510,0.6784,0.5255);       //Pluto
-//    
-//    //Numero de planeta
-//    //Distancia desde el centro de su planeta (km)
-//    //Dias de traslacion (orbita)
-//    //Dias de rotacion
-//    //radio
-//    
-//    temp->addMoon(3, 7000000, 27.3, 27.3, 1738);         //Luna de la Tierra
-//    temp->addMoon(6,39090000, 79,79,5150);               //Titan - Saturn
-//    temp->addMoon(5,47090000, 3.51 , 3.51, 1568);        //Europa - Jupiter
-//    temp->addMoon(5,87090000, 7.15 ,7.15, 5264);         //Ganymede - Jupiter
-//    temp->addMoon(5,127090000, 17,17,4120);              //Callisto - Jupiter
-//    temp->addMoon(8,16090000, -5.8,-5.8,1353);           //Triton- Neptune
-//    temp->addMoon(7,41090000, 8.7,8.7,1578);             //Titania - Uranus
-//    
-//    //Numero de planeta
-//    //Distancia interna
-//    //Tiempo de rotacion
-//    //Distancia externa
-//    //Angulo sobre X
-//    
-//    temp->addRing(6,20500,100,92000,15); //Saturno - Medio inclinado
-//    temp->addRing(7,3000,100,46000,90);  //Uranus - Vertical
-//    temp->addRing(8,4000,100,46000,6);   //Neptuno
-    
     // reset controls
     controls.forward = false;
     controls.backward = false;
@@ -298,13 +258,14 @@ void init(void)
         glLightfv( lights[i], GL_SPECULAR, lightSpecular);
         //glEnable ( lights[i]);
     }
-        
+    glEnable ( lights[0]);
+    player = Player::getInstance();
+    player->playNext();
     timer(0);
 }
 
 void moveCamera() //Ajustamos camara
 {
-    
     if (controls.forward) camera.forward();		if (controls.backward) camera.backward();
     if (controls.left) camera.left();			if (controls.right) camera.right();
     if (controls.yawLeft) camera.yawLeft();		if (controls.yawRight) camera.yawRight();
@@ -492,6 +453,7 @@ void keyDown(unsigned char key, int x, int y)
             camera.pointAt(lookingAt);
             break;
         case 27:
+            delete player;
             exit(0);
             break;
         case '-':
@@ -502,13 +464,6 @@ void keyDown(unsigned char key, int x, int y)
             if (timeSpeed < 200)
                 timeSpeed *= 2.0f; // Aumentar velocidad
             break;
-//        case '[':
-//            planetSizeScale /= 1.2; // reducir planetas
-//            break;
-//        case ']':
-//            planetSizeScale *= 1.2; // Aumentar size planeta
-//            break;
-//            
         case 'o':
             showOrbits = !showOrbits; //Mostrar/ocultar orbitas
             break;
