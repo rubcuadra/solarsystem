@@ -26,6 +26,8 @@ private:
 protected:
     std::vector<Mix_Music *> songs;
     std::vector<Mix_Chunk *> effects;
+    std::vector<std::string> songs_names;
+    
     static Player * instance;
     Player()
     {
@@ -33,7 +35,7 @@ protected:
         // Setup audio mode
         Mix_OpenAudio(22050,AUDIO_S16SYS,2,640);
         Mix_HookMusicFinished( &Player::onStop );
-        
+        Mix_VolumeMusic(MIX_MAX_VOLUME);
         Mix_Music *temp_music;
         Mix_Chunk *temp_chunk;
         
@@ -45,6 +47,7 @@ protected:
                 if(temp_music) //(.wav, .mod .s3m .it .xm)
                 {
                     songs.push_back( temp_music ) ;
+                    songs_names.push_back( i->path().filename().string() );
                 }
             }
         }
@@ -58,7 +61,7 @@ protected:
                     effects.push_back( temp_chunk );
             }
         }
-        std::random_shuffle ( songs.begin(), songs.end() );
+        //std::random_shuffle ( songs.begin(), songs.end() );
     }
     
 public:
@@ -89,22 +92,25 @@ public:
             getInstance()->playNext();
         }
     }
-    void TogglePlay()
+    void togglePlay()
     {
         if (Mix_PlayingMusic() == 1)
         {
-            forcedStop = true;
-            Mix_PauseMusic();
-        }
-        else
-        {
-            Mix_ResumeMusic();
+            if (Mix_PausedMusic() == 1)
+            {
+                Mix_ResumeMusic();
+            }
+            else
+            {
+                forcedStop = true;
+                Mix_PauseMusic();
+            }
         }
     }
     
     void playSong(int index)
     {
-        if (Mix_PlayingMusic() == 1)
+        if (Mix_PlayingMusic() == 1 && Mix_PausedMusic() == 0)
         {
             forcedStop = true;
             Mix_FadeOutMusic(1000); //Instead of Pause
@@ -115,7 +121,7 @@ public:
     
     void playNext()
     {
-        if (Mix_PlayingMusic() == 1)
+        if (Mix_PlayingMusic() == 1 && Mix_PausedMusic() == 0)
         {
             forcedStop = true;
             Mix_FadeOutMusic(1000); //Instead of Pause
@@ -126,7 +132,7 @@ public:
     
     void playPrev()
     {
-        if (Mix_PlayingMusic() == 1)
+        if (Mix_PlayingMusic() == 1 && Mix_PausedMusic() == 0)
         {
             forcedStop = true;
             Mix_PauseMusic();
@@ -145,6 +151,12 @@ public:
         FreeAudio();
     }
     
+    std::string getCurrentPlaying()
+    {
+        if( Mix_PlayingMusic() == 1 && Mix_PausedMusic() == 0)
+            return  songs_names[currentT] ;
+        return " ";
+    }
 };
 
 //Necesario inicializar statics

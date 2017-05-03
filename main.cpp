@@ -346,6 +346,9 @@ void HelpDisplay(GLint ww, GLint wh)
                                                     +std::to_string(camera.getPositionY())+","
                                                     +std::to_string(camera.getPositionZ())+")");
     
+                HelpRenderBitmapString(30, linestart +=
+                                       linespace*27, Help_Font, player->getCurrentPlaying() );
+    
     
             glPopMatrix();
         /*  set the current matrix to GL_PROJECTION */
@@ -506,6 +509,18 @@ void keyDown(unsigned char key, int x, int y)
             break;
         case 'e':
             controls.yawRight = true;
+            break;
+        case 'b':
+            player->playPrev();
+            std::cout<<player->getCurrentPlaying()<<"\n";
+            break;
+        case 'n':
+            player->togglePlay();
+            std::cout<<player->getCurrentPlaying()<<"\n";
+            break;
+        case 'm':
+            player->playNext();
+            std::cout<<player->getCurrentPlaying()<<"\n";
             break;
     }
 }
