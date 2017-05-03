@@ -45,7 +45,6 @@ protected:
                 if(temp_music) //(.wav, .mod .s3m .it .xm)
                 {
                     songs.push_back( temp_music ) ;
-                    std::cout<<"Adding "<<i->path();
                 }
             }
         }
@@ -59,7 +58,7 @@ protected:
                     effects.push_back( temp_chunk );
             }
         }
-        
+        std::random_shuffle ( songs.begin(), songs.end() );
     }
     
 public:
