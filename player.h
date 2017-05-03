@@ -7,8 +7,8 @@
 //
 
 #pragma once
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #undef main
 
 #include <iostream>
@@ -43,7 +43,10 @@ protected:
             {
                 temp_music = Mix_LoadMUS( i->path().c_str() );
                 if(temp_music) //(.wav, .mod .s3m .it .xm)
+                {
                     songs.push_back( temp_music ) ;
+                    std::cout<<"Adding "<<i->path();
+                }
             }
         }
         
@@ -56,6 +59,7 @@ protected:
                     effects.push_back( temp_chunk );
             }
         }
+        
     }
     
 public:
