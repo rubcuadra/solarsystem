@@ -61,7 +61,11 @@ protected:
                     effects.push_back( temp_chunk );
             }
         }
-        //std::random_shuffle ( songs.begin(), songs.end() );
+        if (songs.empty() || effects.empty())
+        {
+            std::cout<<"Debe existir por lo menos 1 effecto y 1 soundtrack con el formato '.wav'\n";
+            exit(0);
+        }
     }
     
 public:
@@ -143,7 +147,7 @@ public:
     
     void playEffect(int index)
     {
-        Mix_PlayChannel(-1, effects[index],0); //hara un sonido, repetir 0 veces en canal disponible(-1)
+        Mix_PlayChannel(-1, effects[index%effects.size()], 0); //hara un sonido, repetir 0 veces en canal disponible(-1)
     }
     
     ~Player()

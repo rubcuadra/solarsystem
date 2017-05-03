@@ -522,6 +522,9 @@ void keyDown(unsigned char key, int x, int y)
             player->playNext();
             std::cout<<player->getCurrentPlaying()<<"\n";
             break;
+        default:
+            player->playEffect(0);
+            break;
     }
 }
 
