@@ -25,6 +25,14 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
+//Fix color del sol(?) y el de su luz
+//Agregar audio effect de acelerar/reducir
+//OBJ loader -> Para naves y maybe algun dark hole
+//A donde apuntan las naves, Hacer que un vector apunte a otro
+//Maybe orbitas mas grandes(Solo - planeta,luna esta bien)
+//Agregar Anillos o algo de ese tipo
+//Generar un makefile
+
 Player *player;
 //Material
 GLfloat matSpecular[] = { 0.3, 0.3, 0.3, 1.0 }; //Color Charolazo(Blanco)
@@ -435,9 +443,9 @@ void keyDown(unsigned char key, int x, int y)
             galaxy->getSystemPosition(key-'0', lookingAt);//Obtener su posicion
             //printf("%f %f %f\n",vec[0],vec[1],vec[2]);
             camera.pointAt(lookingAt);
-            
             setLight( lights[key-'0'] );
         }
+        return;
     }
     switch (key)
     {
@@ -512,15 +520,12 @@ void keyDown(unsigned char key, int x, int y)
             break;
         case 'b':
             player->playPrev();
-            std::cout<<player->getCurrentPlaying()<<"\n";
             break;
         case 'n':
             player->togglePlay();
-            std::cout<<player->getCurrentPlaying()<<"\n";
             break;
         case 'm':
             player->playNext();
-            std::cout<<player->getCurrentPlaying()<<"\n";
             break;
         default:
             player->playEffect(0);
