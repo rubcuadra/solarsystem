@@ -1,6 +1,6 @@
 #!/usr/local/bin/fish
 #brew install png
-#brew install cppconn ?
+#brew install mysql-connector-c++
 #brew install sdl2
 #brew install sdl2_mixer
 #brew install boost
