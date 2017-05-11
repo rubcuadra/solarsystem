@@ -19,6 +19,7 @@
 #include <vector>
 #include "rand.h"
 #include "player.h"
+#include "loader/glm.h"
 
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -32,6 +33,8 @@
 //Maybe orbitas mas grandes(Solo - planeta,luna esta bien)
 //Agregar Anillos o algo de ese tipo
 //Generar un makefile
+
+//GLMmodel *pmodel = NULL;	/* the loaded model */
 
 Player *player;
 //Material
@@ -67,6 +70,7 @@ bool hasAlpha = true;
 
 std::vector<char *> huds;
 char filename[] = "assets/imgs/cockpit.png";
+char obj_filename[] = "assets/models/menu_arwing/menu_arwing.obj";
 
 //Valores para controlar desplazamientos
 double _time = 2.552f;
@@ -269,6 +273,21 @@ void init(void)
     glEnable ( lights[0]);
     player = Player::getInstance();
     player->playNext();
+    
+    
+    if (!Spaceship::pmodel)
+    {		/* load up the model */
+        Spaceship::setModel( glmReadOBJ(obj_filename) );
+        
+        if (!Spaceship::pmodel)
+        {
+            printf("\nUsage: objviewV2 <-s> <obj filename>\n");
+            exit(0);
+        }
+        glmUnitize(Spaceship::pmodel);
+        glmVertexNormals(Spaceship::pmodel, 90.0, GL_TRUE);
+    }
+    
     timer(0);
 }
 
@@ -396,6 +415,7 @@ void display(void)
     
             if (showOrbits)
             {
+                
                 fleet->renderTrajectories();
                 galaxy->renderOrbits();
             }

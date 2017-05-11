@@ -19,7 +19,7 @@
 #endif
 
 #include "constants.h"
-
+#include "loader/glm.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp> 
 #include <glm/gtx/quaternion.hpp>
@@ -107,8 +107,14 @@ void Spaceship::render()
     
         if (forward) glScalef(-1, -1, -1); //Switch para que parezca que la nave va defrente
     
-        glutSolidCone(0.25, 0.1, 10, 10);
-        
+        if ( pmodel )
+        {
+            glmDraw( pmodel , GLM_FLAT | GLM_MATERIAL);
+        }
+        else
+        {
+            glutSolidCone(0.25, 0.1, 10, 10);
+        }
     
     glPopMatrix();
 }
