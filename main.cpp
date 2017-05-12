@@ -109,9 +109,9 @@ void getDataFromDB( std::string query , int columns ) //Region = seed
         
         while (res->next())
         {
-            for (int i = 0; i < columns; ++i) std::cout << res->getString(i) << " ";
             
-            std::cout<<"\n";
+            std::cout << res->getInt("f") << " "<< res->getString("s")<< "\n";
+            
             /* Access column data by alias or column name */
             //std::cout << res->getInt("rid") <<","<<res->getInt("gid")<<","<<res->getString("name")<<"\n";
             /* Access column data by numeric offset, 1 is the first column */
@@ -136,7 +136,7 @@ void getRegionByCoords( float x,float y,float z)
     //Osea el de obtener la region dadas unas coordenadas
     //inputs: coordenadas {x, y, z} dadas por el usuario
     std::string query = boost::str(boost::format(
-                                                 "SELECT r_id, name FROM region WHERE %1% <= xmax AND %1% >= xmin AND %2% <= ymax AND %2% >= ymin AND %3% <= zmax AND %3% >= zmin;"
+                                                 "SELECT r_id as f, name as s FROM region WHERE %1% <= xmax AND %1% >= xmin AND %2% <= ymax AND %2% >= ymin AND %3% <= zmax AND %3% >= zmin;"
                                                  ) % x % y % z);
     getDataFromDB(query, 2);
 }
@@ -146,7 +146,7 @@ void getPlanetsByRegion(std::string region)
     //Todos los planetas dentro de la Región 7
     //inputs: región {r} dada por el usuario
     std::string query = boost::str(boost::format(
-                                                 "SELECT planet.p_id, planet.name FROM planet JOIN solar_system ON planet.ss_id = solar_system.ss_id JOIN region ON solar_system.r_id = region.r_id WHERE solar_system.r_id = '%1%';"
+                                                 "SELECT planet.p_id as f, planet.name as s FROM planet JOIN solar_system ON planet.ss_id = solar_system.ss_id JOIN region ON solar_system.r_id = region.r_id WHERE region.name = '%1%';"
                                                  ) % region);
     getDataFromDB(query, 2);
 }
@@ -156,7 +156,7 @@ void getPlanetsInRadius(int planetId, float distance_radius)
     //Todos los planetas a menos de 1,000,000 km de mi planeta
     //inputs: p_id {p} de un planeta
     std::string query = boost::str(boost::format(
-                                                 "DECLARE @xpos float, @ypos float, @zpos float; SET @xpos = SELECT (xmax - xmin) FROM planet WHERE p_id = %1%; SET @ypos = SELECT (ymax - ymin) FROM planet WHERE p_id = %1%; SET @zpos = SELECT (zmax - zmin) FROM planet WHERE p_id = %1%; SELECT p_id, name FROM planet WHERE p_id in (SELECT p_id FROM planet WHERE sqrt(square((xmax - xmin) - xpos) + square((ymax - ymin) - ypos) + square((zmax - zmin) - zpos)) < %2%);"
+                                                 "SELECT p_id as f, name as s FROM planet WHERE p_id in (SELECT p_id FROM planet WHERE sqrt(power((xmax - xmin) - (SELECT (xmax - xmin) FROM planet WHERE p_id = %1%), 2) + power((ymax - ymin) - (SELECT (ymax - ymin) FROM planet WHERE p_id = %1%), 2) + power((zmax - zmin) - (SELECT (zmax - zmin) FROM planet WHERE p_id = %1%), 2)) < %2%);"
                                                  ) % planetId % distance_radius);
     getDataFromDB(query, 2);
 }
@@ -408,7 +408,7 @@ void keyDown(unsigned char key, int x, int y)
     switch (key)
     {
         case 'p':
-            std::cout<<"Buscar planetas a X distancia de Y planeta";
+            std::cout<<"Buscar planetas a X distancia de Y planeta\n";
             std::cout<<"Ingresa el planeta origen: ";
             std::cin>>pid;
             std::cout<<"Ingresa el radio de busqueda: ";
@@ -418,10 +418,10 @@ void keyDown(unsigned char key, int x, int y)
         case '[':
             std::cout<<"Ingresa la region a buscar: ";
             std::cin>>in_region;
-            getPlanetsByRegion(in_region); //"Region 7"
+            getPlanetsByRegion(in_region); //"SantaFe"
             break;
         case ']':
-            std::cout<<"Obtener region por coordenadas: ";
+            std::cout<<"Obtener region por coordenadas: \n";
             std::cout<<"Coordenada x: ";
             std::cin>>_x;
             std::cout<<"Coordenada y: ";
