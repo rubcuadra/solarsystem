@@ -22,12 +22,13 @@
 
 Texturizer::Texturizer(char *name, int &outWidth, int &outHeight, bool &outHasAlpha)
 {
-    
     if ( !loadPngImage(name,outWidth,outHeight,outHasAlpha, &textureHandler) )
     {
         std::cout << "Unable to load png file" << std::endl ;
         exit(0);
     }
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, outHasAlpha ? 4 : 3, outWidth, outHeight, 0, outHasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, textureHandler);
 }
 
 bool Texturizer::loadPngImage(char *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData)

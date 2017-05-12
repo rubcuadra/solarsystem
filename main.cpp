@@ -29,11 +29,8 @@
 
 //Fix color del sol(?) y el de su luz
 //Agregar audio effect de acelerar/reducir
-//OBJ loader -> Para naves y maybe algun dark hole
 //A donde apuntan las naves, Hacer que un vector apunte a otro
-//Maybe orbitas mas grandes(Solo - planeta,luna esta bien)
 //Agregar Anillos o algo de ese tipo
-//Generar un makefile
 
 Texturizer *hud;
 Player *player;
@@ -113,10 +110,6 @@ void init(void)
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    hud = new Texturizer(filename, hud_width, hud_height, hasAlpha);
-    
-    //std::cout << "Image loaded " << hud_width << " " << hud_height << " alpha " << hasAlpha << std::endl;
-    
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
@@ -162,6 +155,8 @@ void init(void)
         glmUnitize(Spaceship::pmodel);
         glmVertexNormals(Spaceship::pmodel, 90.0, GL_TRUE);
     }
+    
+    hud = new Texturizer(filename, hud_width, hud_height, hasAlpha);
     
     timer(0);
 }
@@ -306,9 +301,7 @@ void display(void)
     glLoadIdentity();
     
     glEnable(GL_TEXTURE_2D);
-        glTexImage2D(GL_TEXTURE_2D, 0, hasAlpha ? 4 : 3, hud_width,
-                     hud_height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE,
-                     hud->getTextureHandler());
+    
         glColor3f(1, 1, 1);
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f);	glVertex2f(0.0f, 0.0f);
