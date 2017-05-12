@@ -22,6 +22,8 @@
 #include "loader/glm.h"
 #include "texturizer.h"
 
+#include <boost/format.hpp>
+
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
@@ -73,6 +75,9 @@ double timeSpeed = 0.1f;
 struct ControlStates{bool forward, backward, left, right, yawLeft, yawRight, pitchUp,pitchDown, rollLeft, rollRight;}
 controls;
 
+int linestart = 10;		/* start point on y axis for text lines */
+int linespace = 20;		/* spac betwwen text lines */
+void *Help_Font = GLUT_BITMAP_8_BY_13;
 
 //Mandamos a llamar una funcion de tiempo en lugar de manejar el idle, dado que de esta manera
 //podemos controlar los fps
@@ -82,6 +87,79 @@ void timer(int)
     glutTimerFunc(10, timer, 0); //100fps
 }
 
+void getDataFromDB( std::string query , int columns ) //Region = seed
+{
+    try
+    {
+        std::cout << query << "\n";
+        
+        sql::Driver *driver;
+        sql::Connection *con;
+        sql::Statement *stmt;
+        sql::ResultSet *res;
+        
+        /* Create a connection */
+        driver = get_driver_instance();
+        con = driver->connect("tcp://127.0.0.1:3306", "root", "root");
+        /* Connect to the MySQL test database */
+        con->setSchema("dbii");
+        
+        stmt = con->createStatement();
+        res = stmt->executeQuery(query);
+        
+        while (res->next())
+        {
+            for (int i = 0; i < columns; ++i) std::cout << res->getString(i) << " ";
+            
+            std::cout<<"\n";
+            /* Access column data by alias or column name */
+            //std::cout << res->getInt("rid") <<","<<res->getInt("gid")<<","<<res->getString("name")<<"\n";
+            /* Access column data by numeric offset, 1 is the first column */
+            //std::cout << "\t... MySQL says it again: ";
+        }
+        delete res;
+        delete stmt;
+        delete con;
+        
+    } catch (sql::SQLException &e)
+    {
+        std::cout << "# ERR: SQLException in " << __FILE__;
+        std::cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << "\n";
+        std::cout << "# ERR: " << e.what();
+        std::cout << " (MySQL error code: " << e.getErrorCode();
+        std::cout << ", SQLState: " << e.getSQLState() << " )" << "\n";
+    }
+}
+
+void getRegionByCoords( float x,float y,float z)
+{
+    //Osea el de obtener la region dadas unas coordenadas
+    //inputs: coordenadas {x, y, z} dadas por el usuario
+    std::string query = boost::str(boost::format(
+                                                 "SELECT r_id, name FROM region WHERE %1% <= xmax AND %1% >= xmin AND %2% <= ymax AND %2% >= ymin AND %3% <= zmax AND %3% >= zmin;"
+                                                 ) % x % y % z);
+    getDataFromDB(query, 2);
+}
+
+void getPlanetsByRegion(std::string region)
+{
+    //Todos los planetas dentro de la Región 7
+    //inputs: región {r} dada por el usuario
+    std::string query = boost::str(boost::format(
+                                                 "SELECT planet.p_id, planet.name FROM planet JOIN solar_system ON planet.ss_id = solar_system.ss_id JOIN region ON solar_system.r_id = region.r_id WHERE solar_system.r_id = '%1%';"
+                                                 ) % region);
+    getDataFromDB(query, 2);
+}
+
+void getPlanetsInRadius(int planetId, float distance_radius)
+{
+    //Todos los planetas a menos de 1,000,000 km de mi planeta
+    //inputs: p_id {p} de un planeta
+    std::string query = boost::str(boost::format(
+                                                 "DECLARE @xpos float, @ypos float, @zpos float; SET @xpos = SELECT (xmax - xmin) FROM planet WHERE p_id = %1%; SET @ypos = SELECT (ymax - ymin) FROM planet WHERE p_id = %1%; SET @zpos = SELECT (zmax - zmin) FROM planet WHERE p_id = %1%; SELECT p_id, name FROM planet WHERE p_id in (SELECT p_id FROM planet WHERE sqrt(square((xmax - xmin) - xpos) + square((ymax - ymin) - ypos) + square((zmax - zmin) - zpos)) < %2%);"
+                                                 ) % planetId % distance_radius);
+    getDataFromDB(query, 2);
+}
 void init(void)
 {
     glClearColor (0.0, 0.0, 0.0, 0.0); //Negro
@@ -185,10 +263,6 @@ void HelpRenderBitmapString(float x, float y, void *font, std::string s)
     }
     
 }
-
-int linestart = 10;		/* start point on y axis for text lines */
-int linespace = 20;		/* spac betwwen text lines */
-void *Help_Font = GLUT_BITMAP_8_BY_13;
 
 void HelpDisplay(GLint ww, GLint wh)
 {
@@ -311,6 +385,11 @@ void setLight(GLenum l)
     for (int i = 0; i<galaxy->getTotalSystems(); ++i) glDisable(lights[i]);
     glEnable(l);
 }
+
+int pid;
+std::string in_region;
+float in_rad,_x,_y,_z;
+
 void keyDown(unsigned char key, int x, int y)
 {
     // check for numerical keys
@@ -325,8 +404,32 @@ void keyDown(unsigned char key, int x, int y)
         }
         return;
     }
+    
     switch (key)
     {
+        case 'p':
+            std::cout<<"Buscar planetas a X distancia de Y planeta";
+            std::cout<<"Ingresa el planeta origen: ";
+            std::cin>>pid;
+            std::cout<<"Ingresa el radio de busqueda: ";
+            std::cin>>in_rad;
+            getPlanetsInRadius( pid, in_rad);
+            break;
+        case '[':
+            std::cout<<"Ingresa la region a buscar: ";
+            std::cin>>in_region;
+            getPlanetsByRegion(in_region); //"Region 7"
+            break;
+        case ']':
+            std::cout<<"Obtener region por coordenadas: ";
+            std::cout<<"Coordenada x: ";
+            std::cin>>_x;
+            std::cout<<"Coordenada y: ";
+            std::cin>>_y;
+            std::cout<<"Coordenada z: ";
+            std::cin>>_z;
+            getRegionByCoords(_x,_y,_z);
+            break;
         case 'z': //Nave Anterior
             current_ship = current_ship-1 > -1? current_ship-1: fleet->getTotalShips()-1 ;
             fleet->getShipPosition(current_ship, lookingAt);
@@ -479,51 +582,10 @@ void instructions()
 }
 void idle(){/*glutPostRedisplay(); //Mejor usamos timer para que sea tiempo mas real*/}
 
-void getDataFromDB(int region) //Region = seed
-{
-    try
-    {
-        sql::Driver *driver;
-        sql::Connection *con;
-        sql::Statement *stmt;
-        sql::ResultSet *res;
-        
-        /* Create a connection */
-        driver = get_driver_instance();
-        con = driver->connect("tcp://127.0.0.1:3306", "root", "root");
-        /* Connect to the MySQL test database */
-        con->setSchema("dbii");
-        
-        stmt = con->createStatement();
-        res = stmt->executeQuery("SELECT * from region");
-
-        while (res->next())
-        {
-            /* Access column data by alias or column name */
-            std::cout << res->getInt("rid") <<","<<res->getInt("gid")<<","<<res->getString("name")<<"\n";
-            /* Access column data by numeric offset, 1 is the first column */
-            //std::cout << "\t... MySQL says it again: ";
-            //std::cout << res->getString(1) << "\n";
-        }
-        delete res;
-        delete stmt;
-        delete con;
-        
-    } catch (sql::SQLException &e)
-    {
-        std::cout << "# ERR: SQLException in " << __FILE__;
-        std::cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << "\n";
-        std::cout << "# ERR: " << e.what();
-        std::cout << " (MySQL error code: " << e.getErrorCode();
-        std::cout << ", SQLState: " << e.getSQLState() << " )" << "\n";
-    }
-}
-
 int main(int argc, char** argv)
 {
     seed = argc<2 ? time(NULL) : atoi(argv[1]); //Random o lo que nos pasaron
     std::cout<<"Explorando región "<<seed<<"\n";
-    getDataFromDB(seed);//Se le pasa la region
     srand(seed);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
