@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 #include <png.h>
 
 #ifdef __APPLE__
@@ -16,7 +17,6 @@
 #include "constants.h"
 #include "galaxy.h"
 #include "fleet.h"
-#include <vector>
 #include "rand.h"
 #include "player.h"
 #include "loader/glm.h"
@@ -145,15 +145,7 @@ void init(void)
     
     if (!Spaceship::pmodel)
     {		/* load up the model */
-        Spaceship::setModel( glmReadOBJ(obj_filename) );
-        
-        if (!Spaceship::pmodel)
-        {
-            printf("\nUsage: objviewV2 <-s> <obj filename>\n");
-            exit(0);
-        }
-        glmUnitize(Spaceship::pmodel);
-        glmVertexNormals(Spaceship::pmodel, 90.0, GL_TRUE);
+        Spaceship::setModel( obj_filename );
     }
     
     hud = new Texturizer(filename, hud_width, hud_height, hasAlpha);

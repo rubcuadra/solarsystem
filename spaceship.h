@@ -9,6 +9,7 @@
 #pragma once
 #include "loader/glm.h"
 #include <cstdlib>
+#include <iostream>
 
 class Spaceship
 {
@@ -21,9 +22,19 @@ private:
     
 public:
     inline static GLMmodel *pmodel = NULL;	/* the loaded model */
-    static void setModel(GLMmodel * model)
+    
+    static void setModel(char * model_path)
     {
-        pmodel = model;
+        pmodel = glmReadOBJ( model_path );
+        
+        if (!pmodel)
+        {
+            printf("\nUsage: objviewV2 <-s> <obj filename>\n");
+            exit(0);
+        }
+        
+        glmUnitize(pmodel);
+        glmVertexNormals(pmodel, 90.0, GL_TRUE);
     }
     
     Spaceship(float *initialPos,float *finalPos);
