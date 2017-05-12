@@ -33,6 +33,7 @@
 //Agregar Anillos o algo de ese tipo
 
 Texturizer *hud;
+
 Player *player;
 //Material
 GLfloat matSpecular[] = { 0.3, 0.3, 0.3, 1.0 }; //Color Charolazo(Blanco)
@@ -58,9 +59,6 @@ SolarSystem * temp = nullptr;
 
 RandomGalaxy *galaxy;
 RandomFleet *fleet;
-
-int hud_width, hud_height;
-bool hasAlpha = true;
 
 std::vector<char *> huds;
 char filename[] = "assets/imgs/cockpit.png";
@@ -148,7 +146,7 @@ void init(void)
         Spaceship::setModel( obj_filename );
     }
     
-    hud = new Texturizer(filename, hud_width, hud_height, hasAlpha);
+    hud = new Texturizer(filename , true);
     
     timer(0);
 }

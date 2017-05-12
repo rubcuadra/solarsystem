@@ -20,15 +20,15 @@
     #include <GL/glut.h>
 #endif
 
-Texturizer::Texturizer(char *name, int &outWidth, int &outHeight, bool &outHasAlpha)
+Texturizer::Texturizer(char *name, bool outHasAlpha)
 {
-    if ( !loadPngImage(name,outWidth,outHeight,outHasAlpha, &textureHandler) )
+    if ( !loadPngImage(name,width,height,outHasAlpha, &textureHandler) )
     {
         std::cout << "Unable to load png file" << std::endl ;
         exit(0);
     }
     
-    glTexImage2D(GL_TEXTURE_2D, 0, outHasAlpha ? 4 : 3, outWidth, outHeight, 0, outHasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, textureHandler);
+    glTexImage2D(GL_TEXTURE_2D, 0, outHasAlpha ? 4 : 3, width, height, 0, outHasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, textureHandler);
 }
 
 bool Texturizer::loadPngImage(char *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData)
@@ -42,8 +42,7 @@ bool Texturizer::loadPngImage(char *name, int &outWidth, int &outHeight, bool &o
     if ((fp = fopen(name, "rb")) == NULL)
         return false;
     
-    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
-                                     NULL, NULL, NULL);
+    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL, NULL, NULL);
     
     if (png_ptr == NULL) {
         fclose(fp);

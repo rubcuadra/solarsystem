@@ -21,8 +21,11 @@ class Texturizer
 {
 private:
     GLubyte * textureHandler;
+    int width, height;
 public :
+    Texturizer(char *name, bool outHasAlpha);
     static bool loadPngImage(char *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData);
-    Texturizer(char *name, int &outWidth, int &outHeight, bool &outHasAlpha);
+    int getWidth() {return width;}
+    int getHeight(){return height;}
     GLubyte * getTextureHandler() { return textureHandler; }
 };
