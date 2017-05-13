@@ -4,6 +4,7 @@
 #brew install sdl2
 #brew install sdl2_mixer
 #brew install boost
+#brew install glm
 
 cd loader
 gcc -DHAVE_CONFIG_H -g -O2 -c *.c
