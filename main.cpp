@@ -417,29 +417,29 @@ void keyDown(unsigned char key, int x, int y)
     
     switch (key)
     {
-        case 'p':
-            std::cout<<"Buscar planetas a X distancia de Y planeta\n";
-            std::cout<<"Ingresa el planeta origen: ";
-            std::cin>>pid;
-            std::cout<<"Ingresa el radio de busqueda: ";
-            std::cin>>in_rad;
-            getPlanetsInRadius( pid, in_rad);
-            break;
-        case '[':
-            std::cout<<"Ingresa la region a buscar: ";
-            std::cin>>in_region;
-            getPlanetsByRegion(in_region); //"SantaFe"
-            break;
-        case ']':
-            std::cout<<"Obtener region por coordenadas: \n";
-            std::cout<<"Coordenada x: ";
-            std::cin>>_x;
-            std::cout<<"Coordenada y: ";
-            std::cin>>_y;
-            std::cout<<"Coordenada z: ";
-            std::cin>>_z;
-            getRegionByCoords(_x,_y,_z);
-            break;
+//        case 'p':
+//            std::cout<<"Buscar planetas a X distancia de Y planeta\n";
+//            std::cout<<"Ingresa el planeta origen: ";
+//            std::cin>>pid;
+//            std::cout<<"Ingresa el radio de busqueda: ";
+//            std::cin>>in_rad;
+//            getPlanetsInRadius( pid, in_rad);
+//            break;
+//        case '[':
+//            std::cout<<"Ingresa la region a buscar: ";
+//            std::cin>>in_region;
+//            getPlanetsByRegion(in_region); //"SantaFe"
+//            break;
+//        case ']':
+//            std::cout<<"Obtener region por coordenadas: \n";
+//            std::cout<<"Coordenada x: ";
+//            std::cin>>_x;
+//            std::cout<<"Coordenada y: ";
+//            std::cin>>_y;
+//            std::cout<<"Coordenada z: ";
+//            std::cin>>_z;
+//            getRegionByCoords(_x,_y,_z);
+//            break;
         case 'z': //Nave Anterior
             current_ship = current_ship-1 > -1? current_ship-1: fleet->getTotalShips()-1 ;
             fleet->getShipPosition(current_ship, lookingAt);
