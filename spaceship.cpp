@@ -109,7 +109,9 @@ void Spaceship::render()
     
         if ( pmodel )
         {
-            glmDraw( pmodel , GLM_FLAT | GLM_MATERIAL);
+            glEnable(GL_TEXTURE_2D);
+                glmDraw( pmodel , GLM_FLAT | GLM_MATERIAL | GLM_TEXTURE);
+            glDisable(GL_TEXTURE_2D);
         }
         else
         {
