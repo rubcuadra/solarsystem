@@ -1,3 +1,5 @@
+//Ruben Cuadra          A01019102
+//Luis Carlos Arias     A01364808
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
