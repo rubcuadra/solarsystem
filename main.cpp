@@ -29,8 +29,6 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
-//Fix color del sol(?) y el de su luz
-//Agregar audio effect de acelerar/reducir
 //A donde apuntan las naves, Hacer que un vector apunte a otro
 //Agregar Anillos o algo de ese tipo
 
@@ -42,9 +40,9 @@ GLfloat matSpecular[] = { 0.3, 0.3, 0.3, 1.0 }; //Color Charolazo(Blanco)
 GLfloat matAmbience[] = { 0.3, 0.3, 0.3, 1.0 }; //Color del planeta
 GLfloat matShininess[] = { 70.0 };              //Charolazo
 //Luces
-GLfloat lightAmbient[] = { 1.0, 1.0, 1.0, 0.5 }; //Ambiente
-GLfloat lightDiffuse[] = { 1.0, 1.0, 1.0, 1.0 }; //Difusa
-GLfloat lightSpecular[] = { 1.0, 1.0, 1.0, 1.0 }; //Specular blanca
+GLfloat lightAmbient[] = { 0.1, 0.1, 0.1, 0.5 }; //Ambiente
+GLfloat lightDiffuse[] = { 0.1, 0.1, 0.1, 1.0 }; //Difusa
+GLfloat lightSpecular[] = { 1, 1, 1, 1.0 }; //Specular blanca
 
 GLfloat sunAmbience[] = {1.0,1.0,0.0, 1.0 };
 
@@ -160,13 +158,9 @@ void getPlanetsInRadius(int planetId, float distance_radius)
                                                  ) % planetId % distance_radius);
     getDataFromDB(query, 2);
 }
-void init(void)
+
+void initLights()
 {
-    glClearColor (0.0, 0.0, 0.0, 0.0); //Negro
-    //Inits
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glShadeModel (GL_SMOOTH);
     //Materiales
     glMaterialfv(GL_FRONT, GL_SPECULAR, matSpecular);
     glMaterialfv(GL_FRONT, GL_SHININESS, matShininess);
@@ -181,20 +175,10 @@ void init(void)
     lights[5] = GL_LIGHT5;
     lights[6] = GL_LIGHT6;
     lights[7] = GL_LIGHT7;
-    
-    //PNG TRANSPARENCY
-    glEnable(GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-    fleet = new RandomFleet();
-    galaxy = new RandomGalaxy();
-    
+}
+
+void resetControls()
+{
     // reset controls
     controls.forward = false;
     controls.backward = false;
@@ -206,17 +190,42 @@ void init(void)
     controls.pitchUp = false;
     controls.yawLeft = false;
     controls.yawRight = false;
+}
+
+void init(void)
+{
+    glClearColor (0.0, 0.0, 0.0, 0.0); //Negro
+    //Inits
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glShadeModel (GL_SMOOTH);
+    //PNG TRANSPARENCY
+    glEnable(GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    
+    initLights();
+    resetControls();
+    
+    //SetPlayer
+    player = Player::getInstance();
+    player->playNext();
+    
+    fleet = new RandomFleet();
+    galaxy = new RandomGalaxy();
     
     for (int i = 0; i < galaxy->getTotalSystems(); ++i)
     {
         glLightfv( lights[i], GL_AMBIENT, lightAmbient);
         glLightfv( lights[i], GL_DIFFUSE, lightDiffuse);
         glLightfv( lights[i], GL_SPECULAR, lightSpecular);
-        //glEnable ( lights[i]);
+        glEnable ( lights[i]);
     }
-    glEnable ( lights[0]);
-    player = Player::getInstance();
-    player->playNext();
+    //glEnable ( lights[0]);
     
     
     if (!Spaceship::pmodel)
@@ -225,6 +234,8 @@ void init(void)
     }
     
     hud = new Texturizer(filename , true);
+    
+    glutFullScreen();
     
     timer(0);
 }
@@ -302,14 +313,13 @@ void HelpDisplay(GLint ww, GLint wh)
                                        linespace, Help_Font, "Time speed: "+std::to_string(timeSpeed) );
                 HelpRenderBitmapString(30, linestart +=
                                        linespace, Help_Font, showOrbits?"Orbits Activated":"Orbits Deactivated");
-                HelpRenderBitmapString(30, linestart +=
-                           linespace, Help_Font, "("+std::to_string(camera.getPositionX())+","
-                                                    +std::to_string(camera.getPositionY())+","
-                                                    +std::to_string(camera.getPositionZ())+")");
+
+                HelpRenderBitmapString(30, screenHeight - linespace*2, Help_Font, player->getCurrentPlaying() );
     
-                HelpRenderBitmapString(30, linestart +=
-                                       linespace*27, Help_Font, player->getCurrentPlaying() );
-    
+                HelpRenderBitmapString(30, screenHeight - linespace, Help_Font, "("+std::to_string(camera.getPositionX())+","
+                                       +std::to_string(camera.getPositionY())+","
+                                       +std::to_string(camera.getPositionZ())+")");
+                
     
             glPopMatrix();
         /*  set the current matrix to GL_PROJECTION */
@@ -400,36 +410,36 @@ void keyDown(unsigned char key, int x, int y)
             galaxy->getSystemPosition(key-'0', lookingAt);//Obtener su posicion
             //printf("%f %f %f\n",vec[0],vec[1],vec[2]);
             camera.pointAt(lookingAt);
-            setLight( lights[key-'0'] );
+            //setLight( lights[key-'0'] );
         }
         return;
     }
     
     switch (key)
     {
-        case 'p':
-            std::cout<<"Buscar planetas a X distancia de Y planeta\n";
-            std::cout<<"Ingresa el planeta origen: ";
-            std::cin>>pid;
-            std::cout<<"Ingresa el radio de busqueda: ";
-            std::cin>>in_rad;
-            getPlanetsInRadius( pid, in_rad);
-            break;
-        case '[':
-            std::cout<<"Ingresa la region a buscar: ";
-            std::cin>>in_region;
-            getPlanetsByRegion(in_region); //"SantaFe"
-            break;
-        case ']':
-            std::cout<<"Obtener region por coordenadas: \n";
-            std::cout<<"Coordenada x: ";
-            std::cin>>_x;
-            std::cout<<"Coordenada y: ";
-            std::cin>>_y;
-            std::cout<<"Coordenada z: ";
-            std::cin>>_z;
-            getRegionByCoords(_x,_y,_z);
-            break;
+//        case 'p':
+//            std::cout<<"Buscar planetas a X distancia de Y planeta\n";
+//            std::cout<<"Ingresa el planeta origen: ";
+//            std::cin>>pid;
+//            std::cout<<"Ingresa el radio de busqueda: ";
+//            std::cin>>in_rad;
+//            getPlanetsInRadius( pid, in_rad);
+//            break;
+//        case '[':
+//            std::cout<<"Ingresa la region a buscar: ";
+//            std::cin>>in_region;
+//            getPlanetsByRegion(in_region); //"SantaFe"
+//            break;
+//        case ']':
+//            std::cout<<"Obtener region por coordenadas: \n";
+//            std::cout<<"Coordenada x: ";
+//            std::cin>>_x;
+//            std::cout<<"Coordenada y: ";
+//            std::cin>>_y;
+//            std::cout<<"Coordenada z: ";
+//            std::cin>>_z;
+//            getRegionByCoords(_x,_y,_z);
+//            break;
         case 'z': //Nave Anterior
             current_ship = current_ship-1 > -1? current_ship-1: fleet->getTotalShips()-1 ;
             fleet->getShipPosition(current_ship, lookingAt);
@@ -460,7 +470,7 @@ void keyDown(unsigned char key, int x, int y)
             showOrbits = !showOrbits; //Mostrar/ocultar orbitas
             break;
         case 'r':
-            planetSizeScale = distanceScale;
+            planetSizeScale = distanceScale; //Real size
             break;
         // Controles de la camara
         case ',':

@@ -70,8 +70,8 @@ void Spaceship::lookAt(float *vec)
 
 void Spaceship::calculatePosition(float t)
 {
-    float p = fmodf(t/500,2); // /50 para que se mueva mas lento
-    forward = p<=1;         //Nos da la direccion, de 0 a 1 es de frente, 1.000..1 a 2 es hacia atras
+    float p = fmodf(t/1000,2); // 1000 para que se mueva mas lento, 0 <= p <= 2
+    forward = p<=1;         //Nos da la direccion, de 0 a 1 es de frente, (1.000...1,2] es hacia atras
     p = forward?p:1-fmodf(p,1); //Solo nos dejara los decimales el modulo, la resta nos dara la inversa
     for (int i = 0; i<3; ++i)
         current[i] = offset[i] + deltas[i]*p; //Ecuacion de recta en 3D
