@@ -470,7 +470,7 @@ void keyDown(unsigned char key, int x, int y)
             showOrbits = !showOrbits; //Mostrar/ocultar orbitas
             break;
         case 'r':
-            planetSizeScale = distanceScale;
+            planetSizeScale = distanceScale; //Real size
             break;
         // Controles de la camara
         case ',':
